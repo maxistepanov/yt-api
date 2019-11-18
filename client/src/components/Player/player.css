@@ -142,7 +142,7 @@ body
   white-space: pre;
   padding: 5px 6px;
   border-radius: 4px;
-  display:none;
+  /*display:none;*/
 }
 
 #s-hover

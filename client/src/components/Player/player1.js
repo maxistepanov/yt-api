@@ -60,6 +60,7 @@ const a =  () => {
 
     function showHover(event) {
         seekBarPos = sArea.offset();
+
         seekT = event.clientX - seekBarPos.left;
         seekLoc = audio.duration * (seekT / sArea.outerWidth());
 

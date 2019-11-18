@@ -1,12 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import cn from 'classnames';
 import './player.css'
-import {bool} from "prop-types";
-import styled from "styled-components";
+import { throttle, debounce } from 'throttle-debounce';
 
-const albums = ['Dawn', 'Me & You', 'Electro Boy', 'Home', 'Proxy (Original Mix)'];
-const trackNames = ['Skylike - Dawn', 'Alex Skrindo - Me & You', 'Kaaze - Electro Boy', 'Jordan Schor - Home', 'Martin Garrix - Proxy'];
-const albumArtworks = ['_1', '_2', '_3', '_4', '_5'];
+import styled from "styled-components";
+import {log} from "util";
+
 const trackUrl = ['https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/2.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/1.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/3.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/4.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/5.mp3'];
 
 const audio: HTMLAudioElement = new Audio;
@@ -22,7 +21,9 @@ export const Player: React.FC = () => {
     const [ progress, setProgress ] = useState<number>(0);
     const [ total, setTotal ] = useState<string>('00:00');
     const [ current, setCurrent ] = useState<string>('00:00');
-
+    const seekArea = useRef<HTMLDivElement>(null);
+    const time = useRef<HTMLDivElement>(null);
+    const sHover = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const timeUpdate = (event: any) => {
 
@@ -38,16 +39,6 @@ export const Player: React.FC = () => {
             let durSeconds = Math.floor(audio.duration - durMinutes * 60);
 
             let playProgress = (audio.currentTime / audio.duration) * 100;
-            //
-            // if (curMinutes < 10)
-            //     curMinutes = '0' + curMinutes;
-            // if (curSeconds < 10)
-            //     curSeconds = '0' + curSeconds;
-            //
-            // if (durMinutes < 10)
-            //     durMinutes = '0' + durMinutes;
-            // if (durSeconds < 10)
-            //     durSeconds = '0' + durSeconds;
 
             if (isNaN(curMinutes) || isNaN(curSeconds)) {
                 setCurrent('00:00');
@@ -68,9 +59,7 @@ export const Player: React.FC = () => {
                 // trackTime.addClass('active');
             }
 
-            console.log('playProgress', playProgress);
             setProgress(playProgress);
-            // seekBar.width(playProgress + '%');
 
             // if (playProgress == 100) {
             //     i.attr('class', 'fa fa-play');
@@ -80,11 +69,54 @@ export const Player: React.FC = () => {
             //     clearInterval(buffInterval);
             // }
 
-        }
-        audio.addEventListener('timeupdate', timeUpdate)
+        };
+        audio.addEventListener('timeupdate', timeUpdate);
 
         return () => audio.removeEventListener('timeupdate', timeUpdate)
-    })
+    });
+
+    const onSeekHover = (event: any) => {
+        const { clientX } = event;
+        if (seekArea && seekArea.current) {
+            const { current: area } = seekArea;
+            const rect: DOMRect = area.getBoundingClientRect();
+            const seekTime = clientX - rect.left ;
+
+            //
+            const nextTime: number = audio.duration * (seekTime / area.offsetWidth);
+            const cM = nextTime / 60;
+
+            const ctMinutes:number = Math.floor(cM);
+            const ctSeconds:number = Math.floor(nextTime - ctMinutes * 60);
+            const value = isNaN(ctMinutes) || isNaN(ctSeconds) ? '--:--' : pad(ctMinutes) + ':' + pad(ctSeconds);
+            if (time && time.current && sHover && sHover.current && seekTime >= 0) {
+                time.current.innerHTML = value;
+                time.current.style.transform = `translateX(${seekTime + 'px'})`;
+                time.current.style.marginLeft = '-21px';
+                sHover.current.style.width = seekTime + 'px';
+            }
+        }
+
+    };
+
+    const hideSeekHover = () => {
+
+    }
+
+    function playFromClickedPos(event: any ) {
+        const { clientX } = event;
+        if (seekArea && seekArea.current) {
+            const { current: area } = seekArea;
+            const rect: DOMRect = area.getBoundingClientRect();
+            const seekTime = clientX - rect.left;
+            const nextTime: number = audio.duration * (seekTime / area.offsetWidth);
+            audio.currentTime = nextTime;
+        }
+
+        // seekBar.width(seekT);
+        // hideHover();
+    }
+
     const playPause = () => {
         if (audio.paused) {
             audio.play();
@@ -113,9 +145,20 @@ export const Player: React.FC = () => {
                                 {total}
                             </div>
                         </div>
-                        <div id="s-area">
-                            <div id="ins-time"/>
-                            <div id="s-hover"/>
+                        <div
+                            id="s-area"
+                            ref={seekArea}
+                            onClick={playFromClickedPos}
+                            onMouseMove={onSeekHover}
+                            onMouseOut={hideSeekHover}
+                        >
+                            <div ref={time} id="ins-time" >
+                                '--:--'
+                            </div>
+                            <div
+                                ref={sHover}
+                                id="s-hover"
+                            />
                             <div id="seek-bar" style={{ width: progress + '%' }} />
                         </div>
                     </div>
@@ -123,13 +166,6 @@ export const Player: React.FC = () => {
                         <div id="album-art" className={cn({ active: !isPaused })}>
                             <img src="https://raw.githubusercontent.com/himalayasingh/music-player-1/master/img/_2.jpg"
                                  id="_2" className="active"/>
-                            <img src="https://raw.githubusercontent.com/himalayasingh/music-player-1/master/img/_3.jpg"
-                                 id="_3"/>
-                            <img src="https://raw.githubusercontent.com/himalayasingh/music-player-1/master/img/_4.jpg"
-                                 id="_4"/>
-                            <img
-                                src="https://raw.githubusercontent.com/himalayasingh/music-player-1/master/img/_5.jpg"
-                                id="_5"/>
                             <div id="buffer-box">Buffering ...</div>
                         </div>
                         <div id="player-controls">
