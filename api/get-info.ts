@@ -1,6 +1,6 @@
 import { NowRequest, NowResponse } from '@now/node';
 import { NowRequestQuery } from '@now/node/dist';
-import { videoInfo, getInfo } from 'ytdl-core';
+import { videoInfo, getInfo, filterFormats } from 'ytdl-core';
 import { plainToClass } from 'class-transformer';
 import 'reflect-metadata';
 
@@ -32,7 +32,8 @@ export default async (req: NowRequest, res: NowResponse) => {
 
         const videoEntity = plainToClass(VideoEntity, {
             author,
-            formats,
+            formats: filterFormats(info.formats, 'audioonly'),
+            videoFormat: filterFormats(info.formats, 'videoonly'),
             description,
             media,
             related_videos,
@@ -41,7 +42,7 @@ export default async (req: NowRequest, res: NowResponse) => {
             title,
             length_seconds,
         });
-
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(videoEntity);
     } catch (e) {
         return e;
