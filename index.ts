@@ -1,6 +1,6 @@
 import express from 'express';
 import terminal from 'chalk-animation';
-
+import 'reflect-metadata';
 // api
 import getInfo from './api/get-info';
 
