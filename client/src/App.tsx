@@ -53,7 +53,7 @@ const App: React.FC = () => {
             </div>
             <input type="text" value={url} onChange={(e) => setUrl(e.target.value)}/>
             {video && <Video data={video}/>}
-            <Player/>
+            <Player data={video}/>
         </div>
     );
 };
