@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {Context, useEffect, useState} from 'react';
 import {validateURL, videoInfo} from 'ytdl-core';
 import axios from 'axios';
 import {Video} from "./components/Video";
 import {Player} from "./components/Player/Player";
+import {AudioContextProvider} from "./contexts/AudioContext";
 
 const baseURL = 'http://192.168.0.111:3000/api';
 
@@ -47,13 +48,12 @@ const App: React.FC = () => {
     }, [url]);
     return (
         <div>
-            <div>https://www.youtube.com/watch?v=4hiYIOm0NPc</div>
-            <div>
-                123
-            </div>
-            <input type="text" value={url} onChange={(e) => setUrl(e.target.value)}/>
-            {video && <Video data={video}/>}
-            <Player data={video}/>
+            <AudioContextProvider>
+                <Player data={video}/>
+            </AudioContextProvider>
+            {/*<div>https://www.youtube.com/watch?v=4hiYIOm0NPc</div>*/}
+            {/*<input type="text" value={url} onChange={(e) => setUrl(e.target.value)}/>*/}
+            {/*{video && <Video data={video}/>}*/}
         </div>
     );
 };

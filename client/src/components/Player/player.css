@@ -178,6 +178,7 @@ body {
     border-radius: 50%;
     overflow: hidden;
     left: 0;
+    background: #ececec;
 }
 
 #album-art.active {
@@ -208,8 +209,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0;
-    z-index: -1;
+    /*opacity: 0;*/
+    /*z-index: -1;*/
 }
 
 #album-art img.active {
@@ -289,8 +290,8 @@ body {
 }
 
 .button {
-    width: 26px;
-    height: 26px;
+    width: 20px;
+    height: 20px;
     padding: 12px;
     background-color: #fff;
     border-radius: 6px;

@@ -1,128 +1,41 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, {useContext} from "react";
+import {videoInfo} from "ytdl-core";
 import cn from 'classnames';
+
+// Styles
 import './player.css'
 
-import styled from "styled-components";
-import {log} from "util";
-import {videoInfo} from "ytdl-core";
+// Components
+import {AlbumArt} from "../AlbumArt";
+import {BgArtwork} from "../BgArtwork";
+
+// Contexts
+import {AudioContext} from "../../contexts/AudioContext";
+
+// Utils
+import {PlayerTrack} from "../PlayerTrack";
 
 const trackUrl = ['https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/2.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/1.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/3.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/4.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/5.mp3'];
 
-const audio: HTMLAudioElement = new Audio;
-let index = 0;
-audio.src = trackUrl[index];
-
-const pad = (value: number): string => {
-    return value < 10 ? value.toString().padStart(2, '0') : value.toString();
-};
+let index = 1;
 
 interface VideoProps {
     data?: videoInfo
 }
 
-export const Player:  React.FC<VideoProps> = ({data}: VideoProps) => {
-    const [isPaused, setPaused] = useState<boolean>(true);
-    const [progress, setProgress] = useState<number>(0);
-    const [total, setTotal] = useState<string>('00:00');
-    const [current, setCurrent] = useState<string>('00:00');
-    const seekArea = useRef<HTMLDivElement>(null);
-    const time = useRef<HTMLDivElement>(null);
-    const sHover = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        const timeUpdate = (event: any) => {
-            const { currentTime, duration } = audio;
-            const curMinutes: number = Math.floor(currentTime / 60);
-            const curSeconds = Math.floor(currentTime - curMinutes * 60);
-
-            const durMinutes = Math.floor(duration / 60);
-            const durSeconds = Math.floor(duration - durMinutes * 60);
-
-            const playProgress = (currentTime / duration) * 100;
-            setProgress(playProgress);
-
-            if (isNaN(curMinutes) || isNaN(curSeconds)) {
-                setCurrent('00:00');
-            } else {
-                setCurrent(pad(curMinutes) + ':' + pad(curSeconds))
-            }
-
-            if (isNaN(durMinutes) || isNaN(durSeconds)) {
-                setTotal('00:00')
-            } else {
-                setTotal(pad(durMinutes) + ':' + pad(durSeconds))
-            }
-
-            if (isNaN(curMinutes) || isNaN(curSeconds) || isNaN(durMinutes) || isNaN(durSeconds)) {
-                // trackTime.removeClass('active');
-            }
-            else {
-                // trackTime.addClass('active');
-            }
-
-
-            // if (playProgress == 100) {
-            //     i.attr('class', 'fa fa-play');
-            //     seekBar.width(0);
-            //     tProgress.text('00:00');
-            //     albumArt.removeClass('buffering').removeClass('active');
-            //     clearInterval(buffInterval);
-            // }
-
-        };
-        audio.addEventListener('timeupdate', timeUpdate);
-
-        return () => audio.removeEventListener('timeupdate', timeUpdate)
-    });
-
-    const onSeekHover = (event: any) => {
-        const {clientX} = event;
-        if (seekArea && seekArea.current) {
-            const {current: area} = seekArea;
-            const rect: DOMRect = area.getBoundingClientRect();
-            const seekTime = clientX - rect.left;
-
-            //
-            const nextTime: number = audio.duration * (seekTime / area.offsetWidth);
-            const cM = nextTime / 60;
-
-            const ctMinutes: number = Math.floor(cM);
-            const ctSeconds: number = Math.floor(nextTime - ctMinutes * 60);
-            const value = isNaN(ctMinutes) || isNaN(ctSeconds) ? '--:--' : pad(ctMinutes) + ':' + pad(ctSeconds);
-            if (time && time.current && sHover && sHover.current && seekTime >= 0) {
-                time.current.innerHTML = value;
-                time.current.style.opacity = '1';
-                sHover.current.style.opacity = '0.2';
-                time.current.style.transform = `translateX(${seekTime + 'px'})`;
-                time.current.style.marginLeft = '-21px';
-                sHover.current.style.width = seekTime + 'px';
-            }
-        }
-
-    };
+export const Player: React.FC<VideoProps> = ({data}: VideoProps) => {
+    const {audio, setPaused, isPaused} = useContext(AudioContext);
 
     const skipTime = (forward: boolean = true) => (event: React.MouseEvent<HTMLDivElement>) => {
         audio.currentTime += forward ? 5 : -5;
     };
 
-    const hideSeekHover = () => {
-        if (time && time.current && sHover && sHover.current) {
-            time.current.style.opacity = '0';
-            sHover.current.style.opacity = '0';
-        }
-    }
-
-    function playFromClickedPos(event: any) {
-        const {clientX} = event;
-        if (seekArea && seekArea.current) {
-            const {current: area} = seekArea;
-            const rect: DOMRect = area.getBoundingClientRect();
-            const seekTime = clientX - rect.left;
-            audio.currentTime = audio.duration * (seekTime / area.offsetWidth);
-            hideSeekHover()
-        }
-    }
-
     const playPause = () => {
+
+        if (!audio.src) {
+            audio.src = trackUrl[index];
+        }
+
         if (audio.paused) {
             audio.play();
             setPaused(false);
@@ -136,49 +49,13 @@ export const Player:  React.FC<VideoProps> = ({data}: VideoProps) => {
     return (
         <div>
             <div id="app-cover">
-                <div id="bg-artwork"/>
+                <BgArtwork/>
                 <div id="bg-layer"/>
                 <div id="player">
-                    <div id="player-track" className={cn({'active': !isPaused})}>
-                        <div id="album-name">Dawn</div>
-                        <div id="track-name">Skylike - Dawn</div>
-                        <div id="track-time" className="active">
-                            <div id="current-time">
-                                {current}
-                            </div>
-                            <div id="track-length">
-                                {total}
-                            </div>
-                        </div>
-                        <div
-                            id="s-area"
-                            ref={seekArea}
-                            onClick={playFromClickedPos}
-                            onMouseMove={onSeekHover}
-                            onMouseOut={hideSeekHover}
-                        >
-                            <div ref={time} id="ins-time">
-                                '--:--'
-                            </div>
-                            <div
-                                ref={sHover}
-                                id="s-hover"
-                            />
-                            <div id="seek-bar" style={{width: progress + '%'}}/>
-                        </div>
-                    </div>
+                    <PlayerTrack/>
                     <div id="player-content">
-                        <div id="album-art" className={cn({active: !isPaused})}>
-                            <img src="https://raw.githubusercontent.com/himalayasingh/music-player-1/master/img/_2.jpg"
-                                 id="_2" className="active"/>
-                            <div id="buffer-box">Buffering ...</div>
-                        </div>
+                        <AlbumArt isPaused={isPaused}/>
                         <div id="player-controls">
-                            <div className="control">
-                                <div className="button" id="play-previous">
-                                    <i className="fas fa-backward"/>
-                                </div>
-                            </div>
                             <div className="control" onClick={skipTime(false)}>
                                 <div className="button">
                                     <i className="fas fa-undo"/>
@@ -195,8 +72,13 @@ export const Player:  React.FC<VideoProps> = ({data}: VideoProps) => {
                                 </div>
                             </div>
                             <div className="control">
-                                <div className="button" id="play-next">
-                                    <i className="fas fa-forward"/>
+                                <div className="button">
+                                    <i className="fas fa-list"/>
+                                </div>
+                            </div>
+                            <div className="control">
+                                <div className="button">
+                                    <i className="fas fa-plus"/>
                                 </div>
                             </div>
                         </div>
