@@ -9,8 +9,11 @@ const http = axios.create({
     baseURL
 });
 
+interface AddNewTrackProps {
+    onSubmit: any;
+}
 
-export const AddNewTrack: React.FC = () => {
+export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
     const [text, setText] = useState<string>('');
     const [load, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<videoInfo>();
@@ -51,7 +54,7 @@ export const AddNewTrack: React.FC = () => {
                     </div>
                 )}
                 <div className="control">
-                    <div className="button">
+                    <div className="button" onClick={() => data && onSubmit(data)}>
                         <Label>Добавить</Label>
                         <i className="fas fa-plus"/>
                     </div>
@@ -85,8 +88,8 @@ const PlaceHolder = styled.div`
 `;
 
 const Container = styled.div`
-    position: absolute;
     top: 0;
+    position: absolute;
     right: 15px;
     left: 15px;
     padding: 15px;
@@ -96,8 +99,6 @@ const Container = styled.div`
     transition: 0.3s ease transform, opacity;
     z-index: 1;
     bottom: 0;
-    animation: ${easyIn} 0.4s ease-in-out forwards;
-
 `;
 
 const YouTubeFrame = styled.iframe`
