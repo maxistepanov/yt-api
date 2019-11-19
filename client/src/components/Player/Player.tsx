@@ -1,19 +1,18 @@
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import {videoInfo} from "ytdl-core";
 import cn from 'classnames';
-
+import styled from 'styled-components';
 // Styles
 import './player.css'
 
 // Components
 import {AlbumArt} from "../AlbumArt";
 import {BgArtwork} from "../BgArtwork";
+import {PlayerTrack} from "../PlayerTrack";
+import {AddNewTrack} from "../AddNewTrack";
 
 // Contexts
 import {AudioContext} from "../../contexts/AudioContext";
-
-// Utils
-import {PlayerTrack} from "../PlayerTrack";
 
 const trackUrl = ['https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/2.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/1.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/3.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/4.mp3', 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/5.mp3'];
 
@@ -25,6 +24,10 @@ interface VideoProps {
 
 export const Player: React.FC<VideoProps> = ({data}: VideoProps) => {
     const {audio, setPaused, isPaused} = useContext(AudioContext);
+    const [isAdd, setAdd] = useState<boolean>(false)
+    const onAddToggle = () => {
+            setAdd( prev => !prev);
+    };
 
     const skipTime = (forward: boolean = true) => (event: React.MouseEvent<HTMLDivElement>) => {
         audio.currentTime += forward ? 5 : -5;
@@ -47,12 +50,12 @@ export const Player: React.FC<VideoProps> = ({data}: VideoProps) => {
     };
 
     return (
-        <div>
+        <Container>
             <div id="app-cover">
                 <BgArtwork/>
-                <div id="bg-layer"/>
                 <div id="player">
                     <PlayerTrack/>
+                    { isAdd && <AddNewTrack /> }
                     <div id="player-content">
                         <AlbumArt isPaused={isPaused}/>
                         <div id="player-controls">
@@ -76,7 +79,7 @@ export const Player: React.FC<VideoProps> = ({data}: VideoProps) => {
                                     <i className="fas fa-list"/>
                                 </div>
                             </div>
-                            <div className="control">
+                            <div className="control" onClick={onAddToggle}>
                                 <div className="button">
                                     <i className="fas fa-plus"/>
                                 </div>
@@ -85,7 +88,13 @@ export const Player: React.FC<VideoProps> = ({data}: VideoProps) => {
                     </div>
                 </div>
             </div>
-        </div>
+        </Container>
     )
 };
+
+const Container = styled.div`
+    height: 100vh;
+    display: flex;
+    align-items: flex-end;
+`;
 

@@ -41,6 +41,7 @@ export default async (req: NowRequest, res: NowResponse) => {
             video_url,
             title,
             length_seconds,
+            ...info,
         });
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(videoEntity);

@@ -9,13 +9,9 @@ body {
 }
 
 #app-cover {
-    position: absolute;
-    right: 0;
-    left: 0;
     width: 95vw;
     height: 100px;
-    margin: -4px auto;
-    bottom: 2.5vw;
+    margin: 0 auto 30px auto;
 }
 
 #bg-artwork {
@@ -58,12 +54,12 @@ body {
     padding: 13px 22px 10px 140px;
     background-color: #fff7f7;
     border-radius: 15px 15px 0 0;
-    transition: 0.3s ease top;
+    transition: 0.3s ease transform;
     z-index: 1;
 }
 
 #player-track.active {
-    top: -92px;
+    transform: translateY(-92px);
 }
 
 #album-name {
@@ -290,7 +286,7 @@ body {
 }
 
 .button {
-    width: 20px;
+    width: auto;
     height: 20px;
     padding: 12px;
     background-color: #fff;
