@@ -123,7 +123,7 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
                 progress,
                 total,
                 current,
-                playPause
+                // playPause
             }}
         >
             {children}

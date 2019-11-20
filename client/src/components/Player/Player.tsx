@@ -19,6 +19,7 @@ import {PosedRouter} from '../PosedRouter';
 
 // Contexts
 import {AudioContext} from '../../contexts/AudioContext';
+import {RouteContainer} from "../RouteContainer";
 
 interface VideoProps {
     data?: videoInfo;
@@ -45,11 +46,11 @@ export const Player: React.FC<VideoProps> = ({data}: VideoProps) => {
                 {/*<BgArtwork/>*/}
                 <div id="player">
                     <PageContainer>
-                       <PosedRouter>
-                           <PlayerTrack path="/player"/>
-                           <AddNewTrack path="/new" onSubmit={onNewTrack}/>
-                           <PlayList path="/playlist" list={list}/>
-                       </PosedRouter>
+                           <Router>
+                               <PlayerTrack path="/player"/>
+                               <AddNewTrack path="/new" onSubmit={onNewTrack}/>
+                               <PlayList path="/playlist" list={list}/>
+                           </Router>
                     </PageContainer>
                     <div id="player-content">
                         <AlbumArt isPaused={isPaused} />

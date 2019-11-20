@@ -9,9 +9,7 @@ export const PosedRouter = ({ children }) => (
         {({ location }) => {
             return (
                 <PoseGroup>
-                    <RouteContainer key={location.pathname}>
                         <Router location={location}>{children}</Router>
-                    </RouteContainer>
                 </PoseGroup>
             )
         }}

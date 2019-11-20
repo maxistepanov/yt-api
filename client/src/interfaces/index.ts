@@ -1,5 +1,5 @@
 export interface RouterProps {
-    path: string;
+    path?: string;
 }
 
 export interface ReactChildren {

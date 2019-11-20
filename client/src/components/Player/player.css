@@ -46,19 +46,11 @@ body {
 }
 
 #player-track {
-    position: absolute;
-    top: 0;
-    right: 15px;
-    left: 15px;
     padding: 13px 22px 10px 140px;
     background-color: #fff7f7;
     border-radius: 15px 15px 0 0;
     transition: 0.3s ease transform;
     z-index: 1;
-}
-
-#player-track.active {
-    transform: translateY(-92px);
 }
 
 #album-name {
