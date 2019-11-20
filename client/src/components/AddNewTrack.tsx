@@ -72,16 +72,12 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
 const containerHeight = 450;
 
 const Container = styled.div`
-    position: absolute;
-    right: 15px;
-    left: 15px;
     padding: 15px;
     height: ${containerHeight}px;
     background-color: #fff7f7;
     border-radius: 15px 15px 0 0;
     transition: 0.3s ease transform, opacity;
     z-index: 1;
-    bottom: 90px;
 `;
 
 const frameHeight = 180;

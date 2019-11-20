@@ -1,5 +1,5 @@
 import React from 'react';
-import styled  from 'styled-components';
+import styled from 'styled-components';
 import { videoInfo } from 'ytdl-core';
 import { RouterProps } from '../interfaces';
 
@@ -31,16 +31,12 @@ export const PlayList: React.FC<PlayListProps> = ({ list }) => {
 };
 
 const Container = styled.div`
-    position: absolute;
-    right: 15px;
-    left: 15px;
     padding: 15px;
     height: 80vh;
     background-color: #fff7f7;
     border-radius: 15px 15px 0 0;
     transition: 0.3s ease transform, opacity;
     z-index: 1;
-    bottom: 0;
 `;
 
 const Title = styled.h3`

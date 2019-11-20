@@ -74,7 +74,7 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = () => {
     }
 
     return (
-        <div id="player-track" className={cn({ active: !isPaused })}>
+        <div id="player-track" className="active">
             <div id="album-name">Dawn</div>
             <div id="track-name">Skylike - Dawn</div>
             <div id="track-time" className="active">

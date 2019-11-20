@@ -1,10 +1,11 @@
-import React, { Context, useContext, useEffect, useState } from 'react';
+import React, {Context, MouseEventHandler, useContext, useEffect, useState} from 'react';
 import { pad } from '../utils';
 
 export interface AudioPlayer {
     audio: HTMLAudioElement;
     isPaused: boolean;
     setPaused: Function;
+    playPause: MouseEventHandler<any>;
     progress: number;
     total: string;
     current: string;
@@ -17,6 +18,7 @@ export const AudioContext: Context<AudioPlayer> = React.createContext<
     isPaused: false,
     progress: 0,
     setPaused: () => {},
+    playPause: () => {},
     total: '',
     audio: new Audio(),
 });
@@ -24,6 +26,18 @@ export const AudioContext: Context<AudioPlayer> = React.createContext<
 interface AudioContextProviderProps {
     children: React.ReactNode;
 }
+
+
+const trackUrl = [
+    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/2.mp3',
+    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/1.mp3',
+    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/3.mp3',
+    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/4.mp3',
+    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/5.mp3',
+];
+
+let index = 1;
+
 
 export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
     children,
@@ -33,6 +47,8 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
     const [progress, setProgress] = useState<number>(0);
     const [total, setTotal] = useState<string>('00:00');
     const [current, setCurrent] = useState<string>('00:00');
+
+
 
     useEffect(() => {
         const { audio } = context;
@@ -82,6 +98,22 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
 
         return () => audio.removeEventListener('timeupdate', timeUpdate);
     });
+
+    const playPause = () => {
+        const { audio } = context;
+        if (!audio.src) {
+            audio.src = trackUrl[index];
+        }
+
+        if (audio.paused) {
+            audio.play();
+            setPaused(false);
+        } else {
+            audio.pause();
+            setPaused(true);
+        }
+    };
+
     return (
         <AudioContext.Provider
             value={{
@@ -91,6 +123,7 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
                 progress,
                 total,
                 current,
+                playPause
             }}
         >
             {children}

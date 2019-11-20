@@ -1,57 +1,31 @@
-import React, { useContext, useState } from 'react';
-import { videoInfo } from 'ytdl-core';
+import React, {useContext, useState} from 'react';
+import {videoInfo} from 'ytdl-core';
 import cn from 'classnames';
 import styled from 'styled-components';
-import posed from 'react-pose';
-import { Router, Link } from '@reach/router';
+import posed, {PoseGroup} from 'react-pose';
+import {ComponentFactory} from 'react-pose/lib/posed';
+import {Router, Link, Location} from '@reach/router';
 
 // Styles
 import './player.css';
 
 // Components
-import { AlbumArt } from '../AlbumArt';
-import { BgArtwork } from '../BgArtwork';
-import { PlayerTrack } from '../PlayerTrack';
-import { AddNewTrack } from '../AddNewTrack';
-import { PlayList } from '../PlayList';
+import {AlbumArt} from '../AlbumArt';
+import {BgArtwork} from '../BgArtwork';
+import {PlayerTrack} from '../PlayerTrack';
+import {AddNewTrack} from '../AddNewTrack';
+import {PlayList} from '../PlayList';
+import {PosedRouter} from '../PosedRouter';
 
 // Contexts
-import { AudioContext } from '../../contexts/AudioContext';
-
-const Box = posed.div({
-    hidden: {
-        opacity: 0,
-        y: 350,
-        transition: {
-            opacity: { ease: 'easeInOut', duration: 300 },
-        },
-    },
-    visible: {
-        y: -350,
-        opacity: 1,
-        scaleY: 1,
-        transition: {
-            opacity: { ease: 'easeInOut', duration: 300 },
-        },
-    },
-});
-
-const trackUrl = [
-    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/2.mp3',
-    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/1.mp3',
-    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/3.mp3',
-    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/4.mp3',
-    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/5.mp3',
-];
-
-let index = 1;
+import {AudioContext} from '../../contexts/AudioContext';
 
 interface VideoProps {
     data?: videoInfo;
 }
 
-export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
-    const { audio, setPaused, isPaused } = useContext(AudioContext);
+export const Player: React.FC<VideoProps> = ({data}: VideoProps) => {
+    const {audio, setPaused, isPaused, playPause} = useContext(AudioContext);
     const [list, setList] = useState<videoInfo[]>([]);
 
     const skipTime = (forward: boolean = true) => (
@@ -60,19 +34,6 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
         audio.currentTime += forward ? 5 : -5;
     };
 
-    const playPause = () => {
-        if (!audio.src) {
-            audio.src = trackUrl[index];
-        }
-
-        if (audio.paused) {
-            audio.play();
-            setPaused(false);
-        } else {
-            audio.pause();
-            setPaused(true);
-        }
-    };
 
     const onNewTrack = (video: videoInfo) => {
         setList((prev: videoInfo[]) => [...prev, video]);
@@ -81,61 +42,39 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     return (
         <Container>
             <div id="app-cover">
-                <BgArtwork />
+                {/*<BgArtwork/>*/}
                 <div id="player">
-                    <Router>
-                        <PlayerTrack path="/player" />
-                        <AddNewTrack path="/new" onSubmit={onNewTrack} />
-                        <PlayList path="/playlist" list={list} />
-                    </Router>
-
-                    <div id="player-content">
-                        <AlbumArt isPaused={isPaused} />
-                        <div id="player-controls">
-                            <div className="control" onClick={skipTime(false)}>
+                    <PageContainer>
+                        <PosedRouter>
+                            <PlayerTrack path="/player"/>
+                            <AddNewTrack path="/new" onSubmit={onNewTrack}/>
+                            <PlayList path="/playlist" list={list}/>
+                        </PosedRouter>
+                    </PageContainer>
+                    <DebugButtons style={{}}>
+                        <Link to="/playlist">
+                            <div className="control">
                                 <div className="button">
-                                    <i className="fas fa-undo" />
+                                    <i className="fas fa-list"/>
                                 </div>
                             </div>
-                            <Link to="/player">
-                                <div className="control">
-                                    <div
-                                        className="button"
-                                        id="play-pause-button"
-                                        onClick={playPause}
-                                    >
-                                        <i
-                                            className={cn('fas', {
-                                                'fa-play': isPaused,
-                                                'fa-pause': !isPaused,
-                                            })}
-                                        />
-                                    </div>
-                                </div>
-                            </Link>
+                        </Link>
 
-                            <div className="control" onClick={skipTime(true)}>
+                        <Link to="/new">
+                            <div className="control">
                                 <div className="button">
-                                    <i className="fas fa-redo" />
+                                    <i className="fas fa-plus"/>
                                 </div>
                             </div>
-                            <Link to="/playlist">
-                                <div className="control">
-                                    <div className="button">
-                                        <i className="fas fa-list" />
-                                    </div>
+                        </Link>
+                        <Link to="/player">
+                            <div className="control">
+                                <div className="button">
+                                    <i className="fas fa-plus"/>
                                 </div>
-                            </Link>
-
-                            <Link to="/new">
-                                <div className="control">
-                                    <div className="button">
-                                        <i className="fas fa-plus" />
-                                    </div>
-                                </div>
-                            </Link>
-                        </div>
-                    </div>
+                            </div>
+                        </Link>
+                    </DebugButtons>
                 </div>
             </div>
         </Container>
@@ -147,4 +86,15 @@ const Container = styled.div`
     display: flex;
     align-items: flex-end;
     overflow: hidden;
+`;
+
+const PageContainer = styled.div`
+    position: relative;
+    //transform: translateY(-90px);
+`
+
+const DebugButtons = styled.div`
+    position: absolute;
+    z-index: 11111;
+    bottom: 0;
 `;
