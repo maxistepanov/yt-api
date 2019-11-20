@@ -1,32 +1,27 @@
 import React from 'react';
-import {videoInfo, videoFormat} from 'ytdl-core';
+import { videoInfo, videoFormat } from 'ytdl-core';
 import styled from 'styled-components';
 
 interface VideoProps {
-    data: videoInfo
+    data: videoInfo;
 }
 
-export const Video: React.FC<VideoProps> = ({data}: VideoProps) => {
+export const Video: React.FC<VideoProps> = ({ data }: VideoProps) => {
     return (
         <div>
-            <h4>
-                {data.title}
-            </h4>
+            <h4>{data.title}</h4>
             <AudioList>
-                { data.formats.map( (format: videoFormat) => {
+                {data.formats.map((format: videoFormat) => {
                     return (
-                        <Audio
-                            key={format.url}
-                            controls
-                            src={format.url}>
+                        <Audio key={format.url} controls src={format.url}>
                             Your browser does not support the
                             <code>audio</code> element.
                         </Audio>
-                    )
-                }) }
+                    );
+                })}
             </AudioList>
         </div>
-    )
+    );
 };
 
 const Audio = styled.audio`

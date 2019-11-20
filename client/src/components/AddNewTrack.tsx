@@ -1,15 +1,14 @@
-import React, {useEffect, useState} from "react";
-import styled, {keyframes} from 'styled-components';
-import axios from "axios";
-import {validateURL, videoInfo} from "ytdl-core";
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { validateURL, videoInfo } from 'ytdl-core';
 
-const baseURL = 'http://192.168.0.111:3000/api';
+// Interfaces
+import { RouterProps } from '../interfaces';
 
-const http = axios.create({
-    baseURL
-});
+// Hooks
+import { useApi } from '../hooks/useApi';
 
-interface AddNewTrackProps {
+interface AddNewTrackProps extends RouterProps {
     onSubmit: any;
 }
 
@@ -17,98 +16,95 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
     const [text, setText] = useState<string>('');
     const [load, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<videoInfo>();
-    useEffect(() => {
-        if (validateURL(text)) {
-            setLoading(true);
-            http.get('get-info?url=' + text).then(response => {
-                console.log('response.data', response.data);
-                setLoading(false);
-                setData(response.data)
-            });
-        }
+    const { http } = useApi();
 
-    }, [text]);
-
+    useEffect(
+        () => {
+            if (validateURL(text)) {
+                setLoading(true);
+                http.get('get-info?url=' + text).then(response => {
+                    console.log('response.data', response.data);
+                    setLoading(false);
+                    setData(response.data);
+                });
+            }
+        },
+        [text],
+    );
 
     return (
         <Container>
             <Title>Добавить новое видео</Title>
             <List>
-                <Input type="text" value={text} onChange={event => setText(event.target.value)}/>
                 {!data && (
-                    <PlaceHolder>
+                    <YouTubeFrameHolder>
                         {load ? 'Load data' : 'Waiting for a link :)'}
-                    </PlaceHolder>
+                    </YouTubeFrameHolder>
                 )}
-
                 {data && (
-                    <div>
-                        <YouTubeFrame
-                            width="100%"
-                            height="150"
-                            src={`https://www.youtube.com/embed/${data.video_id}`}
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                        />
-                    </div>
+                    <YouTubeFrame
+                        width="100%"
+                        src={`https://www.youtube.com/embed/${data.video_id}`}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                    />
                 )}
+                <Input
+                    type="text"
+                    value={text}
+                    onChange={event => setText(event.target.value)}
+                />
                 <div className="control">
-                    <div className="button" onClick={() => data && onSubmit(data)}>
+                    <div
+                        className="button"
+                        onClick={() => data && onSubmit(data)}
+                    >
                         <Label>Добавить</Label>
-                        <i className="fas fa-plus"/>
+                        <i className="fas fa-plus" />
                     </div>
                 </div>
             </List>
         </Container>
-    )
+    );
 };
 
-const height = 350;
-const easyIn = keyframes`
-  from {
-    //transform: rotate(0deg);
-    opacity: 0;
-  }
+const containerHeight = 450;
 
-  to {
-    opacity: 1;
-    transform: translateY(-${height}px);
-  }
+const Container = styled.div`
+    position: absolute;
+    right: 15px;
+    left: 15px;
+    padding: 15px;
+    height: ${containerHeight}px;
+    background-color: #fff7f7;
+    border-radius: 15px 15px 0 0;
+    transition: 0.3s ease transform, opacity;
+    z-index: 1;
+    bottom: 90px;
 `;
 
-const PlaceHolder = styled.div`
-    height: 150px;
+const frameHeight = 180;
+
+const YouTubeFrame = styled.iframe`
+    border-radius: 10px;
+    background: #ececec;
+    height: ${frameHeight}px;
+`;
+
+const YouTubeFrameHolder = styled.div`
     width: 100%;
     border-radius: 10px;
     background: #ececec;
     display: flex;
     justify-content: center;
     align-items: center;
+    height: ${frameHeight}px;
 `;
-
-const Container = styled.div`
-    top: 0;
-    position: absolute;
-    right: 15px;
-    left: 15px;
-    padding: 15px;
-    height: ${height}px;
-    background-color: #fff7f7;
-    border-radius: 15px 15px 0 0;
-    transition: 0.3s ease transform, opacity;
-    z-index: 1;
-    bottom: 0;
-`;
-
-const YouTubeFrame = styled.iframe`
-    border-radius: 10px;
-    background: #ececec;
-`
 
 const Input = styled.input`
     padding: 10px;
-    margin: 0 0 10px 0;
+    margin: 10px 0;
     border-radius: 10px;
     box-shadow: none;
     outline: none;
@@ -128,5 +124,4 @@ const List = styled.div`
 const Label = styled.span`
     color: #5a5858;
     margin: 0 5px 0 5px;
-`
-
+`;
