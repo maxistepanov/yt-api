@@ -45,36 +45,59 @@ export const Player: React.FC<VideoProps> = ({data}: VideoProps) => {
                 {/*<BgArtwork/>*/}
                 <div id="player">
                     <PageContainer>
-                        <PosedRouter>
-                            <PlayerTrack path="/player"/>
-                            <AddNewTrack path="/new" onSubmit={onNewTrack}/>
-                            <PlayList path="/playlist" list={list}/>
-                        </PosedRouter>
+                       <PosedRouter>
+                           <PlayerTrack path="/player"/>
+                           <AddNewTrack path="/new" onSubmit={onNewTrack}/>
+                           <PlayList path="/playlist" list={list}/>
+                       </PosedRouter>
                     </PageContainer>
-                    <DebugButtons style={{}}>
-                        <Link to="/playlist">
-                            <div className="control">
+                    <div id="player-content">
+                        <AlbumArt isPaused={isPaused} />
+                        <div id="player-controls">
+                            <div className="control" onClick={skipTime(false)}>
                                 <div className="button">
-                                    <i className="fas fa-list"/>
+                                    <i className="fas fa-undo" />
                                 </div>
                             </div>
-                        </Link>
+                            <Link to="/player">
+                                <div className="control">
+                                    <div
+                                        className="button"
+                                        id="play-pause-button"
+                                        onClick={playPause}
+                                    >
+                                        <i
+                                            className={cn('fas', {
+                                                'fa-play': isPaused,
+                                                'fa-pause': !isPaused,
+                                            })}
+                                        />
+                                    </div>
+                                </div>
+                            </Link>
 
-                        <Link to="/new">
-                            <div className="control">
+                            <div className="control" onClick={skipTime(true)}>
                                 <div className="button">
-                                    <i className="fas fa-plus"/>
+                                    <i className="fas fa-redo" />
                                 </div>
                             </div>
-                        </Link>
-                        <Link to="/player">
-                            <div className="control">
-                                <div className="button">
-                                    <i className="fas fa-plus"/>
+                            <Link to="/playlist">
+                                <div className="control">
+                                    <div className="button">
+                                        <i className="fas fa-list" />
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
-                    </DebugButtons>
+                            </Link>
+
+                            <Link to="/new">
+                                <div className="control">
+                                    <div className="button">
+                                        <i className="fas fa-plus" />
+                                    </div>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </div>
         </Container>
@@ -90,7 +113,7 @@ const Container = styled.div`
 
 const PageContainer = styled.div`
     position: relative;
-    //transform: translateY(-90px);
+    transform: translateY(-65px);
 `
 
 const DebugButtons = styled.div`
