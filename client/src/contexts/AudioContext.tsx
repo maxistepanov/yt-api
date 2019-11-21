@@ -1,4 +1,10 @@
-import React, {Context, MouseEventHandler, useContext, useEffect, useState} from 'react';
+import React, {
+    Context,
+    MouseEventHandler,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { pad } from '../utils';
 
 export interface AudioPlayer {
@@ -27,7 +33,6 @@ interface AudioContextProviderProps {
     children: React.ReactNode;
 }
 
-
 const trackUrl = [
     'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/2.mp3',
     'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/1.mp3',
@@ -38,7 +43,6 @@ const trackUrl = [
 
 let index = 1;
 
-
 export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
     children,
 }) => {
@@ -47,8 +51,6 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
     const [progress, setProgress] = useState<number>(0);
     const [total, setTotal] = useState<string>('00:00');
     const [current, setCurrent] = useState<string>('00:00');
-
-
 
     useEffect(() => {
         const { audio } = context;

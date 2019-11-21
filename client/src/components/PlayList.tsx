@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { videoInfo } from 'ytdl-core';
 import { RouterProps } from '../interfaces';
 
-import {RouteContainer} from "./RouteContainer";
+import { RouteContainer } from './RouteContainer';
 
 interface PlayListProps extends RouterProps {
     onSelect?: any;
@@ -12,26 +12,23 @@ interface PlayListProps extends RouterProps {
 
 export const PlayList: React.FC<PlayListProps> = ({ list }) => {
     return (
-        <RouteContainer>
-            <Container>
-                <Title>Плей лист</Title>
-                <List>
-                    {list.map((video: videoInfo) => {
-                        const { player_response, title, video_id } = video;
-                        const { videoDetails } = player_response;
-                        const [placeholder] = videoDetails.thumbnail.thumbnails;
+        <Container>
+            <Title>Плей лист</Title>
+            <List>
+                {list.map((video: videoInfo) => {
+                    const { player_response, title, video_id } = video;
+                    const { videoDetails } = player_response;
+                    const [placeholder] = videoDetails.thumbnail.thumbnails;
 
-                        return (
-                            <div key={video_id}>
-                                <img src={placeholder.url} height={50} />
-                                <span> {title}</span>
-                            </div>
-                        );
-                    })}
-                </List>
-            </Container>
-        </RouteContainer>
-
+                    return (
+                        <div key={video_id}>
+                            <img src={placeholder.url} height={50} />
+                            <span> {title}</span>
+                        </div>
+                    );
+                })}
+            </List>
+        </Container>
     );
 };
 

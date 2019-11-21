@@ -6,20 +6,21 @@ export const RouteContainer = posed.div({
         y: 0,
         opacity: 1,
         // beforeChildren: 300,
-        delay: 300,
+        // delay: 300,
         transition: {
-            duration: 500,
-            y: { easy: 'easyIn'},
-        }
+            duration: 200,
+            y: { easy: 'easyIn' },
+        },
     },
     exit: {
-        y: 1000,
+        y: 500,
         opacity: 0,
         transition: {
             // ease: 'easeOut',
-            ease: 'linear',
-            duration: 15000,
-        }
+            // ease: 'linear',
+            duration: 200,
+            y: { easy: 'easyOut' },
+        },
         // tween, spring, decay, physics and keyframes
     },
 });

@@ -9,8 +9,8 @@ body {
 }
 
 #app-cover {
-    width: 95vw;
-    margin: 0 auto 30px auto;
+    width: 98vw;
+    margin: 0 auto 25px auto;
 }
 
 #bg-artwork {
@@ -42,6 +42,8 @@ body {
 #player {
     position: relative;
     height: 100%;
+    display: flex;
+    justify-content: center;
     z-index: 3;
 }
 
@@ -153,6 +155,7 @@ body {
 
     bottom: 0;
     width: 100%;
+    padding: 8px 0;
 }
 
 #album-art {

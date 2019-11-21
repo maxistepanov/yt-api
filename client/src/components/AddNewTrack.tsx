@@ -7,7 +7,6 @@ import { RouterProps } from '../interfaces';
 
 // Hooks
 import { useApi } from '../hooks/useApi';
-import {RouteContainer} from "./RouteContainer";
 
 interface AddNewTrackProps extends RouterProps {
     onSubmit: any;
@@ -34,41 +33,39 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
     );
 
     return (
-       <RouteContainer>
-           <Container>
-               <Title>Добавить новое видео</Title>
-               <List>
-                   {!data && (
-                       <YouTubeFrameHolder>
-                           {load ? 'Load data' : 'Waiting for a link :)'}
-                       </YouTubeFrameHolder>
-                   )}
-                   {data && (
-                       <YouTubeFrame
-                           width="100%"
-                           src={`https://www.youtube.com/embed/${data.video_id}`}
-                           frameBorder="0"
-                           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                           allowFullScreen
-                       />
-                   )}
-                   <Input
-                       type="text"
-                       value={text}
-                       onChange={event => setText(event.target.value)}
-                   />
-                   <div className="control">
-                       <div
-                           className="button"
-                           onClick={() => data && onSubmit(data)}
-                       >
-                           <Label>Добавить</Label>
-                           <i className="fas fa-plus" />
-                       </div>
-                   </div>
-               </List>
-           </Container>
-       </RouteContainer>
+        <Container>
+            <Title>Добавить новое видео</Title>
+            <List>
+                {!data && (
+                    <YouTubeFrameHolder>
+                        {load ? 'Load data' : 'Waiting for a link :)'}
+                    </YouTubeFrameHolder>
+                )}
+                {data && (
+                    <YouTubeFrame
+                        width="100%"
+                        src={`https://www.youtube.com/embed/${data.video_id}`}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                    />
+                )}
+                <Input
+                    type="text"
+                    value={text}
+                    onChange={event => setText(event.target.value)}
+                />
+                <div className="control">
+                    <div
+                        className="button"
+                        onClick={() => data && onSubmit(data)}
+                    >
+                        <Label>Добавить</Label>
+                        <i className="fas fa-plus" />
+                    </div>
+                </div>
+            </List>
+        </Container>
     );
 };
 

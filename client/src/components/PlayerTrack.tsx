@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { pad } from '../utils';
 import { AudioContext } from '../contexts/AudioContext';
 import { RouterProps } from '../interfaces';
-import {RouteContainer} from "./RouteContainer";
+import styled from 'styled-components';
 
 interface PlayerTrackProps extends RouterProps {
     isPaused?: boolean;
@@ -75,28 +75,26 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = () => {
     }
 
     return (
-       <RouteContainer>
-           <div id="player-track" className="active">
-               <div id="album-name">Dawn</div>
-               <div id="track-name">Skylike - Dawn</div>
-               <div id="track-time" className="active">
-                   <div id="current-time">{current}</div>
-                   <div id="track-length">{total}</div>
-               </div>
-               <div
-                   id="s-area"
-                   ref={seekArea}
-                   onClick={playFromClickedPos}
-                   onMouseMove={onSeekHover}
-                   onMouseOut={hideSeekHover}
-               >
-                   <div ref={time} id="ins-time">
-                       '--:--'
-                   </div>
-                   <div ref={sHover} id="s-hover" />
-                   <div id="seek-bar" style={{ width: progress + '%' }} />
-               </div>
-           </div>
-       </RouteContainer>
+        <div id="player-track" className="active">
+            <div id="album-name">Dawn</div>
+            <div id="track-name">Skylike - Dawn</div>
+            <div id="track-time" className="active">
+                <div id="current-time">{current}</div>
+                <div id="track-length">{total}</div>
+            </div>
+            <div
+                id="s-area"
+                ref={seekArea}
+                onClick={playFromClickedPos}
+                onMouseMove={onSeekHover}
+                onMouseOut={hideSeekHover}
+            >
+                <div ref={time} id="ins-time">
+                    '--:--'
+                </div>
+                <div ref={sHover} id="s-hover" />
+                <div id="seek-bar" style={{ width: progress + '%' }} />
+            </div>
+        </div>
     );
 };
