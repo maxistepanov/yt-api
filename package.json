@@ -17,18 +17,22 @@
     "chalk-animation": "^1.6.0",
     "class-transformer": "^0.2.3",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-json-rpc-router": "^0.3.2",
     "json-rpc-protocol": "^0.13.1",
     "kill-port": "^1.6.0",
+    "mysql": "^2.17.1",
     "react-pose": "^4.0.10",
     "reflect-metadata": "^0.1.13",
     "styled-components": "^4.4.1",
     "throttle-debounce": "^2.1.0",
+    "typeorm": "^0.2.20",
     "ytdl-core": "^1.0.0"
   },
   "devDependencies": {
     "@now/node": "^1.1.2",
+    "@types/node": "^12.12.11",
     "@types/throttle-debounce": "^2.1.0"
   },
   "engines": {

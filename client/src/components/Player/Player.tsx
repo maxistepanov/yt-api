@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useReducer } from 'react';
 import { videoInfo } from 'ytdl-core';
 import cn from 'classnames';
 import styled from 'styled-components';
@@ -31,7 +31,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     const skipTime = (forward: boolean = true) => (
         event: React.MouseEvent<HTMLDivElement>,
     ) => {
-        audio.currentTime += forward ? 5 : -5;
+        audio && (audio.currentTime += forward ? 5 : -5);
     };
 
     const onNewTrack = (video: videoInfo) => {

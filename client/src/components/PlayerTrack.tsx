@@ -1,9 +1,7 @@
 import React, { useContext, useRef } from 'react';
-import cn from 'classnames';
 import { pad } from '../utils';
 import { AudioContext } from '../contexts/AudioContext';
 import { RouterProps } from '../interfaces';
-import styled from 'styled-components';
 
 interface PlayerTrackProps extends RouterProps {
     isPaused?: boolean;
