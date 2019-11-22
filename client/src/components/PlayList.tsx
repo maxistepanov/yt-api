@@ -1,13 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { videoInfo } from 'ytdl-core';
-import { RouterProps } from '../interfaces';
-
-import { RouteContainer } from './RouteContainer';
+import { RouterProps, VideoState } from '../interfaces';
 
 interface PlayListProps extends RouterProps {
     onSelect?: any;
-    list: videoInfo[];
+    list: VideoState[];
 }
 
 export const PlayList: React.FC<PlayListProps> = ({ list }) => {
@@ -15,8 +12,8 @@ export const PlayList: React.FC<PlayListProps> = ({ list }) => {
         <Container>
             <Title>Плей лист</Title>
             <List>
-                {list.map((video: videoInfo) => {
-                    const { player_response, title, video_id } = video;
+                {list.map((video: VideoState) => {
+                    const { player_response, title, video_id, saved } = video;
                     const { videoDetails } = player_response;
                     const [placeholder] = videoDetails.thumbnail.thumbnails;
 

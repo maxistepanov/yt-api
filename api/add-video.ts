@@ -1,37 +1,34 @@
 import { NowRequest, NowResponse } from '@now/node';
-import { NowRequestQuery } from '@now/node/dist';
-import { validateURL } from 'ytdl-core';
+import { videoInfo } from 'ytdl-core';
 
 // db
 import { getConnection } from '../database';
 import { Video } from '../database/models/video.model';
 
-export default async (req: NowRequest, res: NowResponse) => {
-    console.time('getConnection');
-    const connection = await getConnection();
-    console.timeEnd('getConnection');
-    let photo = new Video({
-        name: 'Me and Bears 123',
-    });
+const request = async (req: NowRequest, res: NowResponse) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Request-Method', '*');
+    res.setHeader('Access-Control-Allow-Headers', '*');
 
-    const photoObj = await connection.manager.save(photo);
+    if (req.body && req.body.video) {
+        const payload: videoInfo = req.body.video;
 
-    await connection.close();
+        console.time('getConnection');
+        const connection = await getConnection();
+        console.timeEnd('getConnection');
 
-    console.log('Photo has been saved. Photo id is', photoObj.id);
+        const video = new Video({
+            ...payload,
+            name: payload.title,
+        });
 
-    try {
-        const { url = '' }: NowRequestQuery = req.query;
-        if (!url) {
-            return res.status(422).json({
-                error: 'Url is required',
-            });
-        }
+        const result = await connection.manager.save(new Video(video));
 
-        const valid: boolean = await validateURL(String(url));
-
-        res.json({ valid });
-    } catch (e) {
-        return e;
+        await connection.close();
+        return res.json(result);
     }
+
+    return res.json({ error: true });
 };
+
+export default request;

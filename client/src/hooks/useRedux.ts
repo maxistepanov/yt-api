@@ -1,36 +1,25 @@
-import React, { useContext, useState, useReducer, useEffect } from 'react';
-
-const initialState = { count: 0 };
-
-interface ActionType {
-    type: string;
-    payload?: any;
-}
-
-const reducer = (state: any, action: ActionType) => {
-    switch (action.type) {
-        case 'increment':
-            return { count: state.count + 1 };
-        case 'decrement':
-            return { count: state.count - 1 };
-        default:
-            throw new Error();
-    }
-};
+import React, { useReducer, useEffect } from 'react';
 
 export function useRedux<T>(
     reducer: any,
-    initialState: T,
+    initialState?: T,
     persistence?: string,
-) {
+): [any, Function] {
     // load state
-    // code ... here
-
+    if (persistence) {
+        try {
+            const data: string =
+                localStorage.getItem(String(persistence)) || '';
+            initialState = JSON.parse(data);
+        } catch (e) {}
+    }
     const [state, dispatch] = useReducer(reducer, initialState);
 
     useEffect(
         () => {
-            // save the state
+            if (persistence) {
+                localStorage.setItem(persistence, JSON.stringify(state));
+            }
         },
         [state],
     );

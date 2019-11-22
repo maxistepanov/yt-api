@@ -6,7 +6,7 @@ import { validateURL, videoInfo } from 'ytdl-core';
 import { RouterProps } from '../interfaces';
 
 // Hooks
-import { useApi } from '../hooks/useApi';
+import { useApi, useApiInstance } from '../hooks/useApi';
 
 interface AddNewTrackProps extends RouterProps {
     onSubmit: any;
@@ -16,17 +16,18 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
     const [text, setText] = useState<string>('');
     const [load, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<videoInfo>();
-    const { http } = useApi();
+    const { get }: useApiInstance = useApi();
 
     useEffect(
         () => {
             if (validateURL(text)) {
                 setLoading(true);
-                http.get('get-info?url=' + text).then(response => {
-                    console.log('response.data', response.data);
-                    setLoading(false);
-                    setData(response.data);
-                });
+                get<videoInfo>('get-info?url=' + text)
+                    .then((data: videoInfo) => {
+                        setLoading(false);
+                        setData(data);
+                    })
+                    .catch(err => setLoading(false));
             }
         },
         [text],
@@ -53,12 +54,13 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
                 <Input
                     type="text"
                     value={text}
+                    disabled={load}
                     onChange={event => setText(event.target.value)}
                 />
                 <div className="control">
                     <div
                         className="button"
-                        onClick={() => data && onSubmit(data)}
+                        onClick={() => !load && data && onSubmit(data)}
                     >
                         <Label>Добавить</Label>
                         <i className="fas fa-plus" />

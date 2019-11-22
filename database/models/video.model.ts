@@ -1,4 +1,10 @@
-import {Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import {
+    Entity,
+    Column,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Video {
@@ -6,17 +12,15 @@ export class Video {
         Object.assign(this, data);
     }
 
-    @PrimaryGeneratedColumn()
-    id!: number;
+    @PrimaryGeneratedColumn() id!: number;
 
     @Column({
         length: 500,
     })
     name!: string;
 
-    @CreateDateColumn()
-    createdAt!: string;
+    @CreateDateColumn() createdAt!: string;
 
-    @UpdateDateColumn({ type: "timestamp" })
+    @UpdateDateColumn({ type: 'timestamp' })
     updatedAt!: string;
 }

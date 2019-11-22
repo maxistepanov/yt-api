@@ -1,24 +1,34 @@
-import React, { useContext, useState, useReducer } from 'react';
+import React, { useContext } from 'react';
 import { videoInfo } from 'ytdl-core';
 import cn from 'classnames';
 import styled from 'styled-components';
-import { Link } from '@reach/router';
+import { Link, navigate } from '@reach/router';
 
-// Styles
+// styles
 import './player.css';
 
-// Components
+// components
 import { AlbumArt } from '../AlbumArt';
 import { BgArtwork } from '../BgArtwork';
 import { PlayerTrack } from '../PlayerTrack';
 import { AddNewTrack } from '../AddNewTrack';
 import { PlayList } from '../PlayList';
 
-// Router
+// router
 import { PosedRouter } from '../PosedRouter';
 
-// Contexts
+// contexts
 import { AudioContext } from '../../contexts/AudioContext';
+
+// hooks
+import { useApi, useApiInstance } from '../../hooks/useApi';
+import { useRedux } from '../../hooks/useRedux';
+
+// interfaces
+import { VideoState } from '../../interfaces';
+
+// reducers
+import { playlistReducer } from '../../reducers/playlist.reducer';
 
 interface VideoProps {
     data?: videoInfo;
@@ -26,16 +36,47 @@ interface VideoProps {
 
 export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     const { audio, setPaused, isPaused, playPause } = useContext(AudioContext);
-    const [list, setList] = useState<videoInfo[]>([]);
+    const [list = [], dispatch] = useRedux<VideoState[]>(
+        playlistReducer,
+        [],
+        'videoState',
+    );
 
+    const { post }: useApiInstance = useApi();
     const skipTime = (forward: boolean = true) => (
         event: React.MouseEvent<HTMLDivElement>,
     ) => {
         audio && (audio.currentTime += forward ? 5 : -5);
     };
 
-    const onNewTrack = (video: videoInfo) => {
-        setList((prev: videoInfo[]) => [...prev, video]);
+    const onNewTrack = async (video: videoInfo) => {
+        navigate('playlist');
+
+        dispatch({
+            type: 'add',
+            payload: {
+                ...video,
+                saved: false,
+            },
+        });
+
+        const res = await post('add-video', { video });
+
+        dispatch({
+            type: 'update',
+            payload: {
+                ...res,
+                saved: true,
+            },
+        });
+    };
+
+    const pageToggle = (path: string) => {
+        if (window.location.pathname === path) {
+            navigate('player');
+        } else {
+            navigate(path);
+        }
     };
 
     return (
@@ -80,21 +121,23 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                     <i className="fas fa-redo" />
                                 </div>
                             </div>
-                            <Link to="/playlist">
-                                <div className="control">
-                                    <div className="button">
-                                        <i className="fas fa-list" />
-                                    </div>
+                            <div
+                                className="control"
+                                onClick={() => pageToggle('/playlist')}
+                            >
+                                <div className="button">
+                                    <i className="fas fa-list" />
                                 </div>
-                            </Link>
+                            </div>
 
-                            <Link to="/new">
-                                <div className="control">
-                                    <div className="button">
-                                        <i className="fas fa-plus" />
-                                    </div>
+                            <div
+                                className="control"
+                                onClick={() => pageToggle('/new')}
+                            >
+                                <div className="button">
+                                    <i className="fas fa-plus" />
                                 </div>
-                            </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
