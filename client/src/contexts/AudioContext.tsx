@@ -115,12 +115,14 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
 
     const playPause = () => {
         const { audio } = context;
-
-        if (audio.paused) {
-            audio.play();
-        } else {
-            audio.pause();
+        if (audio.src) {
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
         }
+
     };
 
     const skipTime = (forward: boolean = true) => (
