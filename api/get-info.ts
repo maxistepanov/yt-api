@@ -1,7 +1,7 @@
 import { NowRequest, NowResponse } from '@now/node';
 import { NowRequestQuery } from '@now/node/dist';
 import { videoInfo, getInfo, filterFormats } from 'ytdl-core';
-import { plainToClass } from 'class-transformer';
+import {classToPlain, plainToClass} from 'class-transformer';
 import 'reflect-metadata';
 
 // Entities
@@ -24,7 +24,7 @@ export default async (req: NowRequest, res: NowResponse) => {
             videoFormat: filterFormats(info.formats, 'videoonly'),
         });
         res.setHeader('Access-Control-Allow-Origin', '*');
-        res.json(videoEntity);
+        res.json(classToPlain(videoEntity));
     } catch (e) {
         return e;
     }

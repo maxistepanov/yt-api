@@ -23,7 +23,9 @@ export class PlayerResponseEntity {
 
     @Exclude() storyboards!: any;
 
-    @Exclude() microformat!: any;
+    microformat!: any;
+
+    videoDetails!: any;
 
     @Exclude() adSafetyReason!: any;
 }

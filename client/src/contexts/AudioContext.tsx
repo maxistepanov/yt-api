@@ -5,26 +5,30 @@ import React, {
     useEffect,
     useState,
 } from 'react';
+
+// utils
 import { pad } from '../utils';
 
-export interface AudioPlayer {
+export interface AudioPlayerInstance {
     audio: HTMLAudioElement;
     isPaused: boolean;
     setPaused: Function;
     playPause: MouseEventHandler<any>;
+    skipTime(forward?: boolean): any;
     progress: number;
     total: string;
     current: string;
 }
 
-export const AudioContext: Context<AudioPlayer> = React.createContext<
-    AudioPlayer
+export const AudioContext: Context<AudioPlayerInstance> = React.createContext<
+    AudioPlayerInstance
 >({
     current: '',
     isPaused: false,
     progress: 0,
     setPaused: () => {},
     playPause: () => {},
+    skipTime: () => () => {},
     total: '',
     audio: new Audio(),
 });
@@ -33,24 +37,32 @@ interface AudioContextProviderProps {
     children: React.ReactNode;
 }
 
-const trackUrl = [
-    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/2.mp3',
-    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/1.mp3',
-    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/3.mp3',
-    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/4.mp3',
-    'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/music/5.mp3',
-];
-
-let index = 1;
-
 export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
     children,
 }) => {
     const context = useContext(AudioContext);
+
     const [isPaused, setPaused] = useState<boolean>(true);
     const [progress, setProgress] = useState<number>(0);
     const [total, setTotal] = useState<string>('00:00');
     const [current, setCurrent] = useState<string>('00:00');
+
+    // watching a play status
+    useEffect(() => {
+        const { audio } = context;
+
+        const onPlayChange = (event: any) => {
+            setPaused(event.type === 'pause');
+        };
+
+        audio.addEventListener('play', onPlayChange);
+        audio.addEventListener('pause', onPlayChange);
+
+        return () => {
+            audio.removeEventListener('play', onPlayChange);
+            audio.removeEventListener('pause', onPlayChange);
+        };
+    }, []);
 
     useEffect(() => {
         const { audio } = context;
@@ -103,17 +115,20 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
 
     const playPause = () => {
         const { audio } = context;
-        if (!audio.src) {
-            audio.src = trackUrl[index];
-        }
 
         if (audio.paused) {
             audio.play();
-            setPaused(false);
         } else {
             audio.pause();
-            setPaused(true);
         }
+    };
+
+    const skipTime = (forward: boolean = true) => (
+        event: React.MouseEvent<HTMLDivElement>,
+    ) => {
+        const { audio } = context;
+
+        audio && (audio.currentTime += forward ? 5 : -5);
     };
 
     return (
@@ -126,6 +141,7 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
                 total,
                 current,
                 playPause,
+                skipTime,
             }}
         >
             {children}

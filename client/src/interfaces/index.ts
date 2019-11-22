@@ -13,6 +13,32 @@ export interface ReactChildren {
     children?: React.ReactNode;
 }
 
+export interface Thumbnail {
+    url: string;
+    width: number;
+    height: number;
+}
+
 export interface VideoState extends videoInfo {
     saved: boolean;
+    thumbnails: Thumbnail[];
+}
+
+export interface VideoDetails {
+    videoId: string;
+    title: string;
+    lengthSeconds: number;
+    keywords: string[];
+    channelId: string;
+    isCrawlable: boolean;
+    thumbnail: {
+        thumbnails: {
+            url: string;
+            width: number;
+            height: number;
+        }[];
+    };
+    viewCount: number;
+    author: string;
+    isLiveContent: boolean;
 }

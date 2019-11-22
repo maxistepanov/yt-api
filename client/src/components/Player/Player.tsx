@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { videoInfo } from 'ytdl-core';
 import cn from 'classnames';
 import styled from 'styled-components';
-import { Link, navigate } from '@reach/router';
+import { navigate } from '@reach/router';
 
 // styles
 import './player.css';
@@ -29,26 +29,52 @@ import { VideoState } from '../../interfaces';
 
 // reducers
 import { playlistReducer } from '../../reducers/playlist.reducer';
+import { activeTrackReducer } from '../../reducers/activeTrack.reducer';
+
+// selectors
+import { thumbnailSelector } from '../../selectors';
 
 interface VideoProps {
     data?: videoInfo;
 }
 
 export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
-    const { audio, setPaused, isPaused, playPause } = useContext(AudioContext);
-    const [list = [], dispatch] = useRedux<VideoState[]>(
+    const { audio, isPaused, playPause, skipTime } = useContext(AudioContext);
+    const [playlist = [], dispatch] = useRedux<VideoState[]>(
         playlistReducer,
         [],
         {},
         'videoState',
     );
+    const [track, trackDispatch] = useRedux<VideoState[]>(
+        activeTrackReducer,
+        [],
+        {},
+    );
+
+    useEffect(
+        () => {
+            if (
+                audio &&
+                track &&
+                Array.isArray(track.formats) &&
+                track.formats.length
+            ) {
+                const [format] = track.formats;
+                console.log('format.url', format.url);
+
+                if (format.url !== audio.src) {
+                    audio.src = format.url;
+                    audio.play();
+                }
+            } else {
+                console.warn('audio is empty');
+            }
+        },
+        [track],
+    );
 
     const { post }: useApiInstance = useApi();
-    const skipTime = (forward: boolean = true) => (
-        event: React.MouseEvent<HTMLDivElement>,
-    ) => {
-        audio && (audio.currentTime += forward ? 5 : -5);
-    };
 
     const onNewTrack = async (video: videoInfo) => {
         navigate('playlist');
@@ -72,6 +98,13 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
         });
     };
 
+    const onSelectTrack = (payload: VideoState) => {
+        trackDispatch({
+            type: 'set',
+            payload,
+        });
+    };
+
     const pageToggle = (path: string) => {
         if (window.location.pathname === path) {
             navigate('player');
@@ -83,17 +116,25 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     return (
         <Container>
             <div id="app-cover">
-                <BgArtwork />
+                <BgArtwork src={thumbnailSelector(track)} />
                 <div id="player">
                     <PageContainer>
                         <PosedRouter>
-                            <PlayerTrack path="/player" />
+                            <PlayerTrack track={track} path="/player" />
                             <AddNewTrack path="/new" onSubmit={onNewTrack} />
-                            <PlayList path="/playlist" list={list} />
+                            <PlayList
+                                path="/playlist"
+                                list={playlist}
+                                active={track}
+                                onSelect={onSelectTrack}
+                            />
                         </PosedRouter>
                     </PageContainer>
                     <div id="player-content">
-                        <AlbumArt isPaused={isPaused} />
+                        <AlbumArt
+                            src={thumbnailSelector(track)}
+                            isPaused={isPaused}
+                        />
                         <div id="player-controls">
                             <div className="control" onClick={skipTime(false)}>
                                 <div className="button">

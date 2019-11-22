@@ -3,16 +3,14 @@ import cn from 'classnames';
 
 interface AlbumArtProps {
     isPaused: boolean;
-    imageSrc?: string;
+    src?: string;
 }
 
 export const AlbumArt: React.FC<AlbumArtProps> = ({ isPaused, ...props }) => {
-    const {
-        imageSrc = 'https://raw.githubusercontent.com/himalayasingh/music-player-1/master/img/_2.jpg',
-    } = props;
+    const { src } = props;
     return (
         <div id="album-art" className={cn({ active: !isPaused })}>
-            <img className="active" src={imageSrc} />
+            {src && <img className="active" src={src} />}
             <div id="buffer-box">Buffering ...</div>
         </div>
     );

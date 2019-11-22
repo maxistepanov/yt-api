@@ -19,13 +19,14 @@ body {
     right: -30px;
     bottom: -30px;
     left: -30px;
-    background-image: url("https://raw.githubusercontent.com/himalayasingh/music-player-1/master/img/_1.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: 50%;
     filter: blur(40px);
     -webkit-filter: blur(40px);
     z-index: 1;
+    height: 100vh;
+    width: 100vw;
 }
 
 #bg-layer {
@@ -130,6 +131,7 @@ body {
 
 #ins-time, #s-hover {
     background-color: #3b3d50;
+    user-select: none;
 }
 
 #seek-bar {
@@ -201,6 +203,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
+    object-fit: cover;
     /*opacity: 0;*/
     /*z-index: -1;*/
 }

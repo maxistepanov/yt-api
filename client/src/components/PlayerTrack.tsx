@@ -1,13 +1,14 @@
 import React, { useContext, useRef } from 'react';
 import { pad } from '../utils';
 import { AudioContext } from '../contexts/AudioContext';
-import { RouterProps } from '../interfaces';
+import { RouterProps, VideoState } from '../interfaces';
+import { format, parse } from 'date-fns';
 
 interface PlayerTrackProps extends RouterProps {
-    isPaused?: boolean;
+    track?: VideoState;
 }
 
-export const PlayerTrack: React.FC<PlayerTrackProps> = () => {
+export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
     const { audio, isPaused, progress, total, current } = useContext(
         AudioContext,
     );
@@ -74,8 +75,22 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = () => {
 
     return (
         <div id="player-track" className="active">
-            <div id="album-name">Dawn</div>
-            <div id="track-name">Skylike - Dawn</div>
+            {track && (
+                <React.Fragment>
+                    <div id="album-name">{track.title}</div>
+                    {track.author &&
+                        track.published && (
+                            <div id="track-name">
+                                {track.author.name} -{' '}
+                                {format(
+                                    new Date(track.published),
+                                    'dd MMMM yyyy',
+                                )}{' '}
+                            </div>
+                        )}
+                </React.Fragment>
+            )}
+
             <div id="track-time" className="active">
                 <div id="current-time">{current}</div>
                 <div id="track-length">{total}</div>

@@ -6,7 +6,10 @@ export const playlistReducer = (
 ) => {
     switch (action.type) {
         case 'add':
-            return state.concat(action.payload);
+            return state.concat({
+                ...action.payload,
+                created_at: new Date(),
+            });
 
         case 'update': {
             return state.map((video: VideoState) => {
