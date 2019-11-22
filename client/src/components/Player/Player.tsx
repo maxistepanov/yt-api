@@ -61,7 +61,6 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 track.formats.length
             ) {
                 const [format] = track.formats;
-                console.log('format.url', format.url);
 
                 if (format.url !== audio.src) {
                     audio.src = format.url;

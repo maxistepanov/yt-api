@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { validateURL, videoInfo } from 'ytdl-core';
+import useClipboard from 'react-hook-clipboard';
 
 // Interfaces
 import { RouterProps } from '../interfaces';
@@ -17,6 +18,16 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
     const [load, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<videoInfo>();
     const { get }: useApiInstance = useApi();
+    const [clipboard] = useClipboard({ updateFrequency: 300 });
+
+    useEffect(
+        () => {
+            if (validateURL(String(clipboard).trim())) {
+                setText(String(clipboard).trim());
+            }
+        },
+        [clipboard],
+    );
 
     useEffect(
         () => {
