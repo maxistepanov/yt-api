@@ -39,6 +39,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     const [list = [], dispatch] = useRedux<VideoState[]>(
         playlistReducer,
         [],
+        {},
         'videoState',
     );
 
@@ -99,22 +100,20 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                     <i className="fas fa-undo" />
                                 </div>
                             </div>
-                            <Link to="/player">
-                                <div className="control">
-                                    <div
-                                        className="button"
-                                        id="play-pause-button"
-                                        onClick={playPause}
-                                    >
-                                        <i
-                                            className={cn('fas', {
-                                                'fa-play': isPaused,
-                                                'fa-pause': !isPaused,
-                                            })}
-                                        />
-                                    </div>
+                            <div className="control">
+                                <div
+                                    className="button"
+                                    id="play-pause-button"
+                                    onClick={playPause}
+                                >
+                                    <i
+                                        className={cn('fas', {
+                                            'fa-play': isPaused,
+                                            'fa-pause': !isPaused,
+                                        })}
+                                    />
                                 </div>
-                            </Link>
+                            </div>
 
                             <div className="control" onClick={skipTime(true)}>
                                 <div className="button">
@@ -160,6 +159,6 @@ const PageContainer = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    transform: translateY(-84px);
-    width: 98%;
+    transform: translateY(-82px);
+    width: 95%;
 `;

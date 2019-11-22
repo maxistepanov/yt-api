@@ -63,7 +63,7 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = () => {
 
     function playFromClickedPos(event: any) {
         const { clientX } = event;
-        if (seekArea && seekArea.current) {
+        if (seekArea && seekArea.current && audio) {
             const { current: area } = seekArea;
             const rect: DOMRect = area.getBoundingClientRect();
             const seekTime = clientX - rect.left;

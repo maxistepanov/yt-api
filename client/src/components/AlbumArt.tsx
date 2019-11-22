@@ -12,7 +12,7 @@ export const AlbumArt: React.FC<AlbumArtProps> = ({ isPaused, ...props }) => {
     } = props;
     return (
         <div id="album-art" className={cn({ active: !isPaused })}>
-            <img src={imageSrc} />
+            <img className="active" src={imageSrc} />
             <div id="buffer-box">Buffering ...</div>
         </div>
     );

@@ -19,6 +19,11 @@ export class Video {
     })
     name!: string;
 
+    @Column({
+        type: 'simple-json',
+    })
+    json!: any;
+
     @CreateDateColumn() createdAt!: string;
 
     @UpdateDateColumn({ type: 'timestamp' })

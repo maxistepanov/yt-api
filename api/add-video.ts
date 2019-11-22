@@ -18,8 +18,8 @@ const request = async (req: NowRequest, res: NowResponse) => {
         console.timeEnd('getConnection');
 
         const video = new Video({
-            ...payload,
             name: payload.title,
+            json: payload,
         });
 
         const result = await connection.manager.save(new Video(video));

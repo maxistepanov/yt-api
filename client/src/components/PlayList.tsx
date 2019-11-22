@@ -36,6 +36,7 @@ const Container = styled.div`
     border-radius: 15px 15px 0 0;
     transition: 0.3s ease transform, opacity;
     z-index: 1;
+    overflow: scroll;
 `;
 
 const Title = styled.h3`

@@ -3,6 +3,7 @@ import React, { useReducer, useEffect } from 'react';
 export function useRedux<T>(
     reducer: any,
     initialState?: T,
+    actions?: any,
     persistence?: string,
 ): [any, Function] {
     // load state

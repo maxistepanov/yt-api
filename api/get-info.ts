@@ -18,30 +18,10 @@ export default async (req: NowRequest, res: NowResponse) => {
 
         const info: videoInfo = await getInfo(String(url));
 
-        const {
-            author,
-            formats,
-            description,
-            media,
-            related_videos,
-            video_id,
-            video_url,
-            title,
-            length_seconds,
-        } = info;
-
         const videoEntity = plainToClass(VideoEntity, {
-            author,
+            ...info,
             formats: filterFormats(info.formats, 'audioonly'),
             videoFormat: filterFormats(info.formats, 'videoonly'),
-            description,
-            media,
-            related_videos,
-            video_id,
-            video_url,
-            title,
-            length_seconds,
-            ...info,
         });
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(videoEntity);
