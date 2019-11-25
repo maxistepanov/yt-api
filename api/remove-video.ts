@@ -3,8 +3,6 @@ import { videoInfo } from 'ytdl-core';
 
 // db
 import { getConnection } from '../database';
-
-// Models
 import { Video } from '../database/models/video.model';
 
 const request = async (req: NowRequest, res: NowResponse) => {
@@ -12,23 +10,18 @@ const request = async (req: NowRequest, res: NowResponse) => {
     res.setHeader('Access-Control-Request-Method', '*');
     res.setHeader('Access-Control-Allow-Headers', '*');
 
-    if (req.body && req.body.video) {
-        const payload: videoInfo = req.body.video;
-
+    if (req.body && req.body.id) {
         console.time('getConnection');
         const connection = await getConnection();
         console.timeEnd('getConnection');
-
-        const video = new Video({
-            name: payload.title,
-            videoId: payload.video_id,
-            json: payload,
-        });
-
-        const result = await connection.manager.save(new Video(video));
+        const repository = connection.getRepository(Video);
+        const track = await repository.findOne({ id: req.body.id });
+        if (track) {
+            await repository.remove(track);
+        }
 
         await connection.close();
-        return res.json(result);
+        return res.json({ success: true });
     }
 
     return res.json({ error: true });

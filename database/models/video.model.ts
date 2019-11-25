@@ -20,6 +20,11 @@ export class Video {
     name!: string;
 
     @Column({
+        length: 100,
+    })
+    videoId!: string;
+
+    @Column({
         type: 'simple-json',
     })
     json!: any;

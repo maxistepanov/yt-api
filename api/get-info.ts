@@ -1,7 +1,7 @@
 import { NowRequest, NowResponse } from '@now/node';
 import { NowRequestQuery } from '@now/node/dist';
 import { videoInfo, getInfo, filterFormats } from 'ytdl-core';
-import {classToPlain, plainToClass} from 'class-transformer';
+import { classToPlain, plainToClass } from 'class-transformer';
 import 'reflect-metadata';
 
 // Entities

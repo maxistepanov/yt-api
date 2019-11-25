@@ -1,6 +1,5 @@
-import {Exclude, Expose, Type} from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { PlayerResponseEntity } from './playerResponse.entity';
-import get from 'lodash.get';
 
 export class VideoEntity {
     @Exclude() watermark!: [];
@@ -51,23 +50,19 @@ export class VideoEntity {
         try {
             const { thumbnails } = this.player_response.videoDetails.thumbnail;
             if (thumbnails && Array.isArray(thumbnails)) {
-                thumbs.push(...thumbnails)
+                thumbs.push(...thumbnails);
             }
-        } catch (e) {
-
-        }
+        } catch (e) {}
 
         try {
-            const { thumbnails = []  } = this.player_response.microformat.playerMicroformatRenderer.thumbnail;
+            const {
+                thumbnails = [],
+            } = this.player_response.microformat.playerMicroformatRenderer.thumbnail;
             if (thumbnails && Array.isArray(thumbnails)) {
-                thumbs.push(...thumbnails)
+                thumbs.push(...thumbnails);
             }
-        } catch (e) {
+        } catch (e) {}
 
-        }
-
-
-        return thumbs
+        return thumbs;
     }
-
 }

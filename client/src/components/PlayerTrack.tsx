@@ -1,8 +1,21 @@
 import React, { useContext, useRef } from 'react';
+import styled from 'styled-components';
+import { format } from 'date-fns';
+
+// utils
 import { pad } from '../utils';
+
+// contexts
 import { AudioContext } from '../contexts/AudioContext';
+
+// interfaces
 import { RouterProps, VideoState } from '../interfaces';
-import { format, parse } from 'date-fns';
+
+// selectors
+import { thumbnailSelector } from '../selectors';
+
+// components
+import { AlbumArt } from './AlbumArt';
 
 interface PlayerTrackProps extends RouterProps {
     track?: VideoState;
@@ -75,9 +88,12 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
 
     return (
         <div id="player-track" className="active">
+            <AlbumArt src={thumbnailSelector(track)} isPaused={isPaused} />
             {track && (
                 <React.Fragment>
-                    <div id="album-name">{track.title}</div>
+                    <AlbumNameWrapper>
+                        <AlbumName>{track.title}</AlbumName>
+                    </AlbumNameWrapper>
                     {track.author &&
                         track.published && (
                             <div id="track-name">
@@ -111,3 +127,17 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
         </div>
     );
 };
+
+const AlbumName = styled.div`
+    color: #54576f;
+    font-size: 17px;
+    font-weight: bold;
+    animation: marquee 15s ease-in-out infinite;
+    white-space: nowrap;
+`;
+
+const AlbumNameWrapper = styled.div`
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+`;

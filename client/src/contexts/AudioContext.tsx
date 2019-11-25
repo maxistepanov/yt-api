@@ -122,7 +122,6 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
                 audio.pause();
             }
         }
-
     };
 
     const skipTime = (forward: boolean = true) => (

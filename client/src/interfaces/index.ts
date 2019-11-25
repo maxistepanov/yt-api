@@ -20,7 +20,9 @@ export interface Thumbnail {
 }
 
 export interface VideoState extends videoInfo {
+    id: number;
     saved: boolean;
+    createdAt: string;
     thumbnails: Thumbnail[];
 }
 

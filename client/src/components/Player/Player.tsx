@@ -33,9 +33,18 @@ import { activeTrackReducer } from '../../reducers/activeTrack.reducer';
 
 // selectors
 import { thumbnailSelector } from '../../selectors';
+import { playlistSelector } from '../../selectors/playlist.selector';
 
 interface VideoProps {
     data?: videoInfo;
+}
+
+interface GetPlaylistResponse {
+    id: number;
+    name: string;
+    json: videoInfo;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
@@ -60,11 +69,17 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 Array.isArray(track.formats) &&
                 track.formats.length
             ) {
+                console.log('track', track);
+
                 const [format] = track.formats;
 
-                if (format.url !== audio.src) {
-                    audio.src = format.url;
-                    audio.play();
+                try {
+                    if (format.url !== audio.src) {
+                        audio.src = format.url;
+                        audio.play();
+                    }
+                } catch (e) {
+                    console.log('err')
                 }
             } else {
                 console.warn('audio is empty');
@@ -73,7 +88,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
         [track],
     );
 
-    const { post }: useApiInstance = useApi();
+    const { post, get }: useApiInstance = useApi();
 
     const onNewTrack = async (video: videoInfo) => {
         navigate('playlist');
@@ -86,7 +101,12 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
             },
         });
 
-        const res = await post('add-video', { video });
+        const res = await post('add-video', {
+            video: {
+                ...video,
+                createdAt: new Date(),
+            },
+        });
 
         dispatch({
             type: 'update',
@@ -97,11 +117,37 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
         });
     };
 
+    useEffect(() => {
+        get('/get-playlist').then((payload: GetPlaylistResponse[]) => {
+            dispatch({
+                type: 'updatePlaylist',
+                payload: payload.map(
+                    ({ json, ...rest }: GetPlaylistResponse) => ({
+                        saved: true,
+                        ...json,
+                        ...rest,
+                    }),
+                ),
+            });
+        });
+    }, []);
+
     const onSelectTrack = (payload: VideoState) => {
         trackDispatch({
             type: 'set',
             payload,
         });
+    };
+
+    const onRemove = (video: VideoState) => {
+        dispatch({
+            type: 'update',
+            payload: {
+                ...video,
+                remove: true,
+            },
+        });
+        post('/remove-video', { id: video.id }).then();
     };
 
     const pageToggle = (path: string) => {
@@ -123,18 +169,20 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                             <AddNewTrack path="/new" onSubmit={onNewTrack} />
                             <PlayList
                                 path="/playlist"
-                                list={playlist}
+                                list={playlistSelector(playlist)}
                                 active={track}
                                 onSelect={onSelectTrack}
+                                onRemove={onRemove}
                             />
                         </PosedRouter>
                     </PageContainer>
                     <div id="player-content">
-                        <AlbumArt
-                            src={thumbnailSelector(track)}
-                            isPaused={isPaused}
-                        />
                         <div id="player-controls">
+                            <div className="control">
+                                <div className="button">
+                                    <i className="fas fa-bars" />
+                                </div>
+                            </div>
                             <div className="control" onClick={skipTime(false)}>
                                 <div className="button">
                                     <i className="fas fa-undo" />

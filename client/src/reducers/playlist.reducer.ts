@@ -8,7 +8,7 @@ export const playlistReducer = (
         case 'add':
             return state.concat({
                 ...action.payload,
-                created_at: new Date(),
+                createdAt: new Date(),
             });
 
         case 'update': {
@@ -19,6 +19,9 @@ export const playlistReducer = (
 
                 return video;
             });
+        }
+        case 'updatePlaylist': {
+            return action.payload;
         }
         case 'delete':
             return state;
