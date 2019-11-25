@@ -31,21 +31,23 @@ export const PlayList: React.FC<PlayListProps> = ({
     const Row = type === PlayListView.block ? ViewBlockRow : ViewListRow;
 
     return (
-        <Container type={type}>
-            <Title>Плей лист</Title>
-            <List>
-                {list.map((video: VideoState) => {
-                    return (
-                        <Row
-                            key={video.video_id}
-                            onSelect={onSelect}
-                            onRemove={onRemove}
-                            video={video}
-                        />
-                    );
-                })}
-            </List>
-        </Container>
+        <BorderRadius>
+            <Container type={type}>
+                <Title>Плей лист</Title>
+                <List>
+                    {list.map((video: VideoState) => {
+                        return (
+                            <Row
+                                key={video.video_id}
+                                onSelect={onSelect}
+                                onRemove={onRemove}
+                                video={video}
+                            />
+                        );
+                    })}
+                </List>
+            </Container>
+        </BorderRadius>
     );
 };
 
@@ -53,13 +55,17 @@ interface ContainerProps {
     type: number;
 }
 
+const BorderRadius = styled.div`
+    border-radius: 15px
+`;
+
 const Title = styled.h3`
     color: #5a5858;
 `;
 
 const Container = styled.div<ContainerProps>`
     padding: ${props => (props.type === PlayListView.block ? 0 : 15)}px;
-    height: 75vh;
+    height: 85vh;
     background-color: #fff7f7;
     border-radius: 15px 15px 0 0;
     transition: 0.3s ease transform, opacity;

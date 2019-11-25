@@ -1,5 +1,6 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
+import cn from 'classnames';
+import styled, {keyframes} from "styled-components";
 
 interface AlbumArtProps {
     isPaused: boolean;
@@ -9,12 +10,10 @@ interface AlbumArtProps {
 export const AlbumArt: React.FC<AlbumArtProps> = ({ isPaused, ...props }) => {
     const { src } = props;
     return (
-        <ArtContainer>
-            <Album active={!isPaused}>
-                {src && <AlbumImg src={src} />}
-                <div id="buffer-box">Buffering ...</div>
-            </Album>
-        </ArtContainer>
+        <div id="album-art" className={cn({ active: !isPaused, pause: isPaused })}>
+            {src && <img className="active" src={src} />}
+            <div id="buffer-box">Buffering ...</div>
+        </div>
     );
 };
 
@@ -29,6 +28,15 @@ interface AlbumProps {
     active: boolean;
 }
 
+const rotateAlbumArt = keyframes`
+    0% {
+        transform: rotateZ(0);
+}
+    100% {
+        transform: rotateZ(360deg);
+}
+`;
+
 const AlbumImg = styled.img`
     display: block;
     position: absolute;
@@ -37,9 +45,13 @@ const AlbumImg = styled.img`
     width: 100%;
     height: 100%;
     object-fit: cover;
+    overflow: hidden;
+     animation: ${rotateAlbumArt} 4s linear 0s infinite forwards
+
 `;
 
-const Album = styled.div<AlbumProps>`
+
+const Album = styled.div < AlbumProps > `
     width: 200px;
     height: 200px;
     transform: rotateZ(0);
@@ -50,13 +62,8 @@ const Album = styled.div<AlbumProps>`
     left: 0;
     background: #ececec;
     margin: 50px 0;
-    ${props =>
-        !props.active
-            ? css`
-                  transition: 0.3s ease all;
-                  box-shadow: 0 0 0 4px #fff7f7, 0 30px 50px -15px #afb7c1;
-              `
-            : {}}
+    transition: 0.3s ease all;
+    box-shadow: 0 0 0 4px #fff7f7, 0 30px 50px -15px #afb7c1;
     
     &:before{
         content: '';
@@ -74,9 +81,5 @@ const Album = styled.div<AlbumProps>`
     }
     
     ${AlbumImg} {
-        ${props =>
-            props.active
-                ? 'animation: rotateAlbumArt 4s linear 0s infinite forwards'
-                : ''}
-    
+    }
 `;

@@ -64,6 +64,21 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
         };
     }, []);
 
+    // watching error
+    useEffect(() => {
+        const { audio } = context;
+        const onError = (e: any) => {
+            console.log('e', e);
+        };
+
+        audio.addEventListener('error', onError);
+
+        return () => {
+            audio.removeEventListener('error', onError);
+        };
+
+    }, []);
+
     useEffect(() => {
         const { audio } = context;
         const timeUpdate = (event: any) => {

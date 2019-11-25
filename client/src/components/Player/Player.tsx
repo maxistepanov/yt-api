@@ -76,6 +76,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 try {
                     if (format.url !== audio.src) {
                         audio.src = format.url;
+                        // audio.playbackRate = 1.25;
                         audio.play();
                     }
                 } catch (e) {
@@ -181,6 +182,11 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                             <div className="control">
                                 <div className="button">
                                     <i className="fas fa-bars" />
+                                </div>
+                            </div>
+                            <div className="control">
+                                <div className="button">
+                                    x1.00
                                 </div>
                             </div>
                             <div className="control" onClick={skipTime(false)}>

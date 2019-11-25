@@ -3,6 +3,9 @@ import { NowRequest, NowResponse } from '@now/node';
 // db
 import { getConnection } from '../database';
 import { Video } from '../database/models/video.model';
+import {filterFormats, getInfo, videoInfo} from "ytdl-core";
+import {classToPlain, plainToClass} from "class-transformer";
+import {VideoEntity} from "../entities/video.entity";
 
 const request = async (req: NowRequest, res: NowResponse) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -18,7 +21,22 @@ const request = async (req: NowRequest, res: NowResponse) => {
 
         await connection.close();
 
-        return res.json(playlist);
+        const update = await Promise.all(playlist.map(( async (video: Video) => {
+            const info: videoInfo = await getInfo(String(video.json.video_id));
+
+            const videoEntity = plainToClass(VideoEntity, {
+                ...info,
+                formats: filterFormats(info.formats, 'audioonly'),
+                videoFormat: filterFormats(info.formats, 'videoonly'),
+            });
+
+            return {
+                ...video,
+                json: classToPlain(videoEntity)
+            }
+        } )));
+
+        return res.json(update);
     } catch (e) {
         return res.json({ error: true, message: e.toString() });
     }
