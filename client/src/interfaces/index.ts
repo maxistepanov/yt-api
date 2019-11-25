@@ -1,4 +1,4 @@
-import { videoInfo } from 'ytdl-core';
+import {videoFormat, videoInfo} from 'ytdl-core';
 
 export interface ActionType {
     type: string;
@@ -24,6 +24,7 @@ export interface VideoState extends videoInfo {
     saved: boolean;
     createdAt: string;
     thumbnails: Thumbnail[];
+    videoFormat: videoFormat[]
 }
 
 export interface VideoDetails {

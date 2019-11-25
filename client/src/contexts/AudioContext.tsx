@@ -13,7 +13,7 @@ export interface AudioPlayerInstance {
     audio: HTMLAudioElement;
     isPaused: boolean;
     setPaused: Function;
-    playPause: MouseEventHandler<any>;
+    playPause: any;
     skipTime(forward?: boolean): any;
     progress: number;
     total: string;

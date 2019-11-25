@@ -27,7 +27,7 @@ const request = async (req: NowRequest, res: NowResponse) => {
             const videoEntity = plainToClass(VideoEntity, {
                 ...info,
                 formats: filterFormats(info.formats, 'audioonly'),
-                videoFormat: filterFormats(info.formats, 'videoonly'),
+                videoFormat: filterFormats(info.formats, 'video'),
             });
 
             return {

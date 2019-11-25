@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import { format } from 'date-fns';
 
@@ -10,6 +10,7 @@ import { AudioContext } from '../contexts/AudioContext';
 
 // interfaces
 import { RouterProps, VideoState } from '../interfaces';
+import {videoFormat} from "ytdl-core";
 
 // selectors
 import { thumbnailSelector } from '../selectors';
@@ -26,10 +27,35 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
         AudioContext,
     );
 
+    const [ video, setVideo ] = useState<videoFormat>();
+
+    const videoRef = useRef<HTMLVideoElement>(null);
     const seekArea = useRef<HTMLDivElement>(null);
     const time = useRef<HTMLDivElement>(null);
     const sHover = useRef<HTMLDivElement>(null);
 
+    useEffect(() => {
+        if (track && track.videoFormat) {
+
+            const video = track.videoFormat.find( (format: videoFormat) =>  format.audioBitrate);
+            if (video) {
+                setVideo(video);
+            }
+        }
+    }, [track]);
+
+    const getProgressInPx = (progress: number) => {
+        if (seekArea && seekArea.current) {
+            const { current: area } = seekArea;
+            const rect: DOMRect = area.getBoundingClientRect();
+
+            const width = area.offsetWidth;
+            return width / 100 * progress;
+        }
+
+        return 0;
+    };
+    
     const onSeekHover = (event: any) => {
         const { clientX } = event;
         if (seekArea && seekArea.current) {
@@ -81,7 +107,15 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
             const { current: area } = seekArea;
             const rect: DOMRect = area.getBoundingClientRect();
             const seekTime = clientX - rect.left;
-            audio.currentTime = audio.duration * (seekTime / area.offsetWidth);
+            const time = audio.duration * (seekTime / area.offsetWidth);
+
+
+            if (videoRef && videoRef.current) {
+                videoRef.current.currentTime = time;
+                videoRef.current.play()
+            }
+
+            audio.currentTime = time;
             hideSeekHover();
         }
     }
@@ -89,6 +123,9 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
     return (
         <div id="player-track" className="active">
             <AlbumArt src={thumbnailSelector(track)} isPaused={isPaused} />
+            {/*{ video && (*/}
+                {/*<Video ref={videoRef} src={video.url} />*/}
+            {/*) }*/}
             {track && (
                 <React.Fragment>
                     <AlbumNameWrapper>
@@ -106,11 +143,11 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
                         )}
                 </React.Fragment>
             )}
-
             <div id="track-time" className="active">
                 <div id="current-time">{current}</div>
                 <div id="track-length">{total}</div>
             </div>
+
             <div
                 id="s-area"
                 ref={seekArea}
@@ -124,6 +161,12 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
                 <div ref={sHover} id="s-hover" />
                 <div id="seek-bar" style={{ width: progress + '%' }} />
             </div>
+            <TimePicker
+                style={{transform: `translateX(${(getProgressInPx(progress) - 5)  + 'px'})`}}
+                onDragEnd={(e) => {
+                    console.log('onDragEnd', e);
+                }}
+            />
         </div>
     );
 };
@@ -140,4 +183,19 @@ const AlbumNameWrapper = styled.div`
     position: relative;
     width: 100%;
     overflow: hidden;
+`;
+
+const Video = styled.video`
+    width: 100%;
+`;
+
+const TimePicker = styled.span`
+    width: 10px;
+    height: 10px;
+    background: red;
+    display: inline-block;
+    position: absolute;
+    border-radius: 50%;
+    bottom: 7px;
+    z-index: 10;
 `;

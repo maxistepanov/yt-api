@@ -57,7 +57,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     );
     const [track, trackDispatch] = useRedux<VideoState[]>(
         activeTrackReducer,
-        [],
+        undefined,
         {},
     );
 
@@ -198,7 +198,19 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                 <div
                                     className="button"
                                     id="play-pause-button"
-                                    onClick={playPause}
+                                    onClick={() => {
+                                        const list = playlistSelector(playlist);
+                                        if (!track && Array.isArray(list) && list.length) {
+                                            const [ firstTrack ] = list;
+
+                                            onSelectTrack(firstTrack);
+                                            playPause();
+                                            return;
+                                        }
+
+                                        playPause()
+
+                                    }}
                                 >
                                     <i
                                         className={cn('fas', {
