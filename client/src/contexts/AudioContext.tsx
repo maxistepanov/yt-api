@@ -15,6 +15,7 @@ export interface AudioPlayerInstance {
     setPaused: Function;
     playPause: any;
     skipTime(forward?: boolean): any;
+    setCurrentTime(time: number): any;
     progress: number;
     total: string;
     current: string;
@@ -28,6 +29,7 @@ export const AudioContext: Context<AudioPlayerInstance> = React.createContext<
     progress: 0,
     setPaused: () => {},
     playPause: () => {},
+    setCurrentTime: () => {},
     skipTime: () => () => {},
     total: '',
     audio: new Audio(),
@@ -107,6 +109,13 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
         }
     };
 
+    const setCurrentTime = (time: number) => {
+        const { audio } = context;
+        if (audio.src) {
+            audio.currentTime = time;
+        }
+    };
+
     const skipTime = (forward: boolean = true) => (
         event: React.MouseEvent<HTMLDivElement>,
     ) => {
@@ -126,6 +135,7 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
                 current,
                 playPause,
                 skipTime,
+                setCurrentTime,
             }}
         >
             {children}

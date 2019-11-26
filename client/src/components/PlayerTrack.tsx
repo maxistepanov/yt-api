@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { format } from 'date-fns';
 
 // utils
-import { getTimeString, getValueInBetween, pad } from '../utils';
+import { getTimeString, getValueInBetween } from '../utils';
 
 // contexts
 import { AudioContext } from '../contexts/AudioContext';
@@ -23,10 +23,16 @@ interface PlayerTrackProps extends RouterProps {
 }
 
 export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
-    const { audio, isPaused, progress, total, current } = useContext(
-        AudioContext,
-    );
+    const {
+        audio,
+        isPaused,
+        progress,
+        total,
+        current,
+        setCurrentTime,
+    } = useContext(AudioContext);
 
+    const [offsetWidth, setOffsetWidth] = useState<number>(0);
     const [lastMove, setLastMove] = useState<any>(null);
     const [onTouch, setOnTouch] = useState<any>(null);
 
@@ -38,6 +44,19 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
     const sHoverRef = useRef<HTMLDivElement>(null);
     const pointRef = useRef<HTMLDivElement>(null);
 
+    const updateOffsetWidth = () => {
+        if (seekAreaRef && seekAreaRef.current) {
+            setOffsetWidth(seekAreaRef.current.offsetWidth);
+        }
+    };
+
+    useEffect(updateOffsetWidth, [seekAreaRef.current]);
+
+    useEffect(() => {
+        window.addEventListener('resize', updateOffsetWidth);
+        return () => window.removeEventListener('resize', updateOffsetWidth);
+    }, []);
+
     useEffect(() => {
         const fn = () => {
             document.removeEventListener('mousemove', onPointMove);
@@ -46,6 +65,7 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
 
         return () => document.removeEventListener('mouseup', fn);
     }, []);
+
     useEffect(
         () => {
             if (track && track.videoFormat) {
@@ -61,37 +81,29 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
     );
 
     const getProgressInPx = (progress: number) => {
-        if (seekAreaRef && seekAreaRef.current) {
-            const { current: area } = seekAreaRef;
-            const width = area.offsetWidth;
-            return (width / 100) * progress;
-        }
-
-        return 0;
+        return (offsetWidth / 100) * progress;
     };
 
     const onSeekHover = (event: any) => {
         const { clientX } = event;
 
         if (seekAreaRef && seekAreaRef.current) {
-            const { current: area } = seekAreaRef;
-            const rect: DOMRect = area.getBoundingClientRect();
-            const time = clientX - rect.left;
-            const seekTime = getValueInBetween(time, 0, area.offsetWidth);
+            const time = getSeekTime(clientX);
+            const seekTime = getValueInBetween(time, 0, offsetWidth);
 
             //
-            const nextTime: number =
-                audio.duration * (seekTime / area.offsetWidth);
+            const nextTime: number = audio.duration * (seekTime / offsetWidth);
 
-            const value = getTimeString(nextTime);
+            const cssText = css`
+                opacity: 1;
+                margin-left: -21px;
+                transform: translateX(${seekTime}px);
+            `;
 
             if (timeRef && timeRef.current) {
                 // hover time
-                timeRef.current.innerHTML = value;
-                timeRef.current.style.opacity = '1';
-                timeRef.current.style.transform = `translateX(${seekTime +
-                    'px'})`;
-                timeRef.current.style.marginLeft = '-21px';
+                timeRef.current.innerHTML = getTimeString(nextTime);
+                timeRef.current.style.cssText = cssText.join('');
             }
 
             if (sHoverRef && sHoverRef.current) {
@@ -111,21 +123,28 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
 
     function playFromClickedPos(event: any) {
         const { clientX } = event;
-        if (seekAreaRef && seekAreaRef.current && audio && audio.src) {
-            const { current: area } = seekAreaRef;
-            const rect: DOMRect = area.getBoundingClientRect();
-            const seekTime = clientX - rect.left;
-            const time = audio.duration * (seekTime / area.offsetWidth);
+        if (audio && audio.src) {
+            const seekTime = getSeekTime(clientX);
+            const time = audio.duration * (seekTime / offsetWidth);
 
             if (videoRef && videoRef.current) {
                 videoRef.current.currentTime = time;
                 videoRef.current.play();
             }
 
-            audio.currentTime = time;
+            setCurrentTime(time);
             hideSeekHover();
         }
     }
+
+    const getSeekTime = (clientX: number): number => {
+        const { current: area } = seekAreaRef;
+        if (area) {
+            const rect: DOMRect = area.getBoundingClientRect();
+            return clientX - rect.left;
+        }
+        return 0;
+    };
 
     const onPointMove = (e: any) => {
         const [firstTouch] = e.touches;
@@ -140,8 +159,7 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
 
             const { current: area } = seekAreaRef;
 
-            const rect: DOMRect = area.getBoundingClientRect();
-            const seekTime = clientX - rect.left;
+            const seekTime = getSeekTime(clientX);
 
             const point = pointRef.current;
             point.style.transform = ` translateX(${getValueInBetween(

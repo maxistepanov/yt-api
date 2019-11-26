@@ -172,13 +172,14 @@ body {
     overflow: hidden;
     left: 0;
     background: #ececec;
+    user-select: none;
 }
 
 #album-art.active img {
     transition: 0.3s ease all;
     box-shadow: 0 0 0 4px #fff7f7, 0 30px 50px -15px #afb7c1;
     animation-play-state: running;
-
+    user-select: none;
 }
 
 #album-art.pause img {
