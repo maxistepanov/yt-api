@@ -59,11 +59,11 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
 
     useEffect(() => {
         const fn = () => {
-            document.removeEventListener('mousemove', onPointMove);
+            window.removeEventListener('mousemove', onPointMove);
         };
-        document.addEventListener('mouseup', fn);
+        window.addEventListener('mouseup', fn);
 
-        return () => document.removeEventListener('mouseup', fn);
+        return () => window.removeEventListener('mouseup', fn);
     }, []);
 
     useEffect(

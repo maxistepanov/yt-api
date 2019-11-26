@@ -1,13 +1,13 @@
 import React, {
     Context,
-    MouseEventHandler,
     useContext,
     useEffect,
     useState,
 } from 'react';
+import throttle from 'lodash.throttle';
 
 // utils
-import { getTimeString, pad } from '../utils';
+import { getTimeString } from '../utils';
 
 export interface AudioPlayerInstance {
     audio: HTMLAudioElement;
@@ -76,9 +76,7 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
 
         audio.addEventListener('error', onError);
 
-        return () => {
-            audio.removeEventListener('error', onError);
-        };
+        return () => audio.removeEventListener('error', onError);
     }, []);
 
     useEffect(() => {
@@ -93,10 +91,11 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
             setCurrent(getTimeString(currentTime));
             setTotal(getTimeString(duration));
         };
-        audio.addEventListener('timeupdate', timeUpdate);
+         const  throttleUpdate =  throttle(timeUpdate, 500);
+        audio.addEventListener('timeupdate', throttleUpdate);
 
-        return () => audio.removeEventListener('timeupdate', timeUpdate);
-    });
+        return () => audio.removeEventListener('timeupdate', throttleUpdate);
+    }, []);
 
     const playPause = () => {
         const { audio } = context;

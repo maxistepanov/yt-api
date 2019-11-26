@@ -8,6 +8,7 @@ import kill from 'kill-port';
 import getInfo from './api/get-info';
 import validateUrl from './api/validate-url';
 import addVideo from './api/add-video';
+import getplaylist from './api/get-playlist';
 
 const app = express();
 app.use(
@@ -21,6 +22,7 @@ const router = express.Router();
 router.use('/get-info', getInfo);
 router.use('/validate-url', validateUrl);
 router.use('/add-video', addVideo);
+router.use('/get-playlist', getplaylist);
 
 router.use('/', (req, res) => {
     res.send('It"s works');
