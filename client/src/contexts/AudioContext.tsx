@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 
 // utils
-import { pad } from '../utils';
+import { getTimeString, pad } from '../utils';
 
 export interface AudioPlayerInstance {
     audio: HTMLAudioElement;
@@ -68,6 +68,7 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
     useEffect(() => {
         const { audio } = context;
         const onError = (e: any) => {
+            setPaused(true);
             console.log('e', e);
         };
 
@@ -76,52 +77,19 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
         return () => {
             audio.removeEventListener('error', onError);
         };
-
     }, []);
 
     useEffect(() => {
-        const { audio } = context;
+        const { audio }: AudioPlayerInstance = context;
         const timeUpdate = (event: any) => {
             const { currentTime, duration } = audio;
-            const curMinutes: number = Math.floor(currentTime / 60);
-            const curSeconds = Math.floor(currentTime - curMinutes * 60);
-
-            const durMinutes = Math.floor(duration / 60);
-            const durSeconds = Math.floor(duration - durMinutes * 60);
 
             const playProgress = (currentTime / duration) * 100;
+
             setProgress(playProgress);
-            const defaultTime = '00:00';
-            if (isNaN(curMinutes) || isNaN(curSeconds)) {
-                setCurrent(defaultTime);
-            } else {
-                setCurrent(pad(curMinutes) + ':' + pad(curSeconds));
-            }
 
-            if (isNaN(durMinutes) || isNaN(durSeconds)) {
-                setTotal(defaultTime);
-            } else {
-                setTotal(pad(durMinutes) + ':' + pad(durSeconds));
-            }
-
-            if (
-                isNaN(curMinutes) ||
-                isNaN(curSeconds) ||
-                isNaN(durMinutes) ||
-                isNaN(durSeconds)
-            ) {
-                // trackTime.removeClass('active');
-            } else {
-                // trackTime.addClass('active');
-            }
-
-            // if (playProgress == 100) {
-            //     i.attr('class', 'fa fa-play');
-            //     seekBar.width(0);
-            //     tProgress.text('00:00');
-            //     albumArt.removeClass('buffering').removeClass('active');
-            //     clearInterval(buffInterval);
-            // }
+            setCurrent(getTimeString(currentTime));
+            setTotal(getTimeString(duration));
         };
         audio.addEventListener('timeupdate', timeUpdate);
 

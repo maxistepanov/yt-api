@@ -73,7 +73,6 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
                         className="button"
                         onClick={() => !load && data && onSubmit(data)}
                     >
-                        <Label>Добавить</Label>
                         <i className="fas fa-plus" />
                     </div>
                 </div>

@@ -80,7 +80,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                         audio.play();
                     }
                 } catch (e) {
-                    console.log('err')
+                    console.log('err');
                 }
             } else {
                 console.warn('audio is empty');
@@ -159,6 +159,19 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
         }
     };
 
+    const onStartPlay = () => {
+        const list = playlistSelector(playlist);
+        if (!track && Array.isArray(list) && list.length) {
+            const [firstTrack] = list;
+
+            onSelectTrack(firstTrack);
+            playPause();
+            return;
+        }
+
+        playPause();
+    };
+
     return (
         <Container>
             <div id="app-cover">
@@ -185,9 +198,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                 </div>
                             </div>
                             <div className="control">
-                                <div className="button">
-                                    x1.00
-                                </div>
+                                <div className="button">x1.00</div>
                             </div>
                             <div className="control" onClick={skipTime(false)}>
                                 <div className="button">
@@ -198,19 +209,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                 <div
                                     className="button"
                                     id="play-pause-button"
-                                    onClick={() => {
-                                        const list = playlistSelector(playlist);
-                                        if (!track && Array.isArray(list) && list.length) {
-                                            const [ firstTrack ] = list;
-
-                                            onSelectTrack(firstTrack);
-                                            playPause();
-                                            return;
-                                        }
-
-                                        playPause()
-
-                                    }}
+                                    onClick={onStartPlay}
                                 >
                                     <i
                                         className={cn('fas', {

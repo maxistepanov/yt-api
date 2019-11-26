@@ -56,7 +56,7 @@ interface ContainerProps {
 }
 
 const BorderRadius = styled.div`
-    border-radius: 15px
+    border-radius: 15px;
 `;
 
 const Title = styled.h3`

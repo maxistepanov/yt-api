@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import styled, {keyframes} from "styled-components";
+import styled, { keyframes } from 'styled-components';
 
 interface AlbumArtProps {
     isPaused: boolean;
@@ -10,7 +10,10 @@ interface AlbumArtProps {
 export const AlbumArt: React.FC<AlbumArtProps> = ({ isPaused, ...props }) => {
     const { src } = props;
     return (
-        <div id="album-art" className={cn({ active: !isPaused, pause: isPaused })}>
+        <div
+            id="album-art"
+            className={cn({ active: !isPaused, pause: isPaused })}
+        >
             {src && <img className="active" src={src} />}
             <div id="buffer-box">Buffering ...</div>
         </div>
@@ -46,12 +49,10 @@ const AlbumImg = styled.img`
     height: 100%;
     object-fit: cover;
     overflow: hidden;
-     animation: ${rotateAlbumArt} 4s linear 0s infinite forwards
-
+    animation: ${rotateAlbumArt} 4s linear 0s infinite forwards;
 `;
 
-
-const Album = styled.div < AlbumProps > `
+const Album = styled.div<AlbumProps>`
     width: 200px;
     height: 200px;
     transform: rotateZ(0);
@@ -64,8 +65,8 @@ const Album = styled.div < AlbumProps > `
     margin: 50px 0;
     transition: 0.3s ease all;
     box-shadow: 0 0 0 4px #fff7f7, 0 30px 50px -15px #afb7c1;
-    
-    &:before{
+
+    &:before {
         content: '';
         position: absolute;
         top: 50%;
@@ -79,7 +80,7 @@ const Album = styled.div < AlbumProps > `
         box-shadow: inset 0 0 0 2px #fff;
         z-index: 2;
     }
-    
+
     ${AlbumImg} {
     }
 `;
