@@ -1,8 +1,8 @@
 {
-  "name": "YTB",
-  "short_name": "YTB",
-  "theme_color": "#2196f3",
-  "background_color": "#2196f3",
+  "name": "PODCASTS",
+  "short_name": "YouTube Podcast",
+  "theme_color": "#000",
+  "background_color": "#000",
   "display": "fullscreen",
   "orientation": "portrait",
   "Scope": "/",
