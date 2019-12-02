@@ -9,6 +9,7 @@ import getInfo from './api/get-info';
 import validateUrl from './api/validate-url';
 import addVideo from './api/add-video';
 import getPlaylist from './api/get-playlist';
+import getplaylist from './api/get-playlist';
 
 const app = express();
 app.use(
@@ -23,6 +24,7 @@ router.use('/get-info', getInfo);
 router.use('/validate-url', validateUrl);
 router.use('/add-video', addVideo);
 router.use('/get-playlist', getPlaylist);
+router.use('/get-playlist', getplaylist);
 
 router.use('/', (req, res) => {
     res.send('It"s works');
