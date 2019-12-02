@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { createConnection } from 'typeorm';
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 
 // Models
 import { Video } from './models/video.model';

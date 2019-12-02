@@ -15,9 +15,7 @@ export default async (req: NowRequest, res: NowResponse) => {
                 error: 'Url is required',
             });
         }
-
         const info: videoInfo = await getInfo(String(url));
-
         const videoEntity = plainToClass(VideoEntity, {
             ...info,
             formats: filterFormats(info.formats, 'audioonly'),
@@ -26,6 +24,7 @@ export default async (req: NowRequest, res: NowResponse) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(classToPlain(videoEntity));
     } catch (e) {
-        return e;
+        // return e;
+        return res.json({ error: true });
     }
 };
