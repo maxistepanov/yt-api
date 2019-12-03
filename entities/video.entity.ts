@@ -1,5 +1,5 @@
-import { Exclude, Expose, Type } from 'class-transformer';
-import { PlayerResponseEntity } from './playerResponse.entity';
+import {Exclude, Expose, Type} from 'class-transformer';
+import {PlayerResponseEntity} from './playerResponse.entity';
 import {relatedVideo, videoInfo} from "ytdl-core";
 
 export class VideoEntity implements videoInfo {
@@ -108,7 +108,9 @@ export class VideoEntity implements videoInfo {
     iv_allow_in_place_switch?: string;
     iv_load_policy?: string;
 
-    constructor(partial: Partial<videoInfo>) {
+    videoFormat: any;
+
+    constructor(partial: Partial<any>) {
         Object.assign(this, partial);
     }
 
@@ -139,9 +141,7 @@ export class VideoEntity implements videoInfo {
 
     @Exclude() enablecsi: any;
 
-    @Exclude() formats: any;
-
-    @Exclude() videoFormat: any;
+    formats: any;
 
     @Exclude() csi_page_type: any;
 
@@ -157,16 +157,17 @@ export class VideoEntity implements videoInfo {
 
     @Exclude() vss_host!: any;
 
-    @Expose({ name: 'thumbnails' })
+    @Expose({name: 'thumbnails'})
     getThumbnail() {
         const thumbs: any = [];
 
         try {
-            const { thumbnails } = this.player_response.videoDetails.thumbnail;
+            const {thumbnails} = this.player_response.videoDetails.thumbnail;
             if (thumbnails && Array.isArray(thumbnails)) {
                 thumbs.push(...thumbnails);
             }
-        } catch (e) {}
+        } catch (e) {
+        }
 
         try {
             const {
@@ -175,7 +176,8 @@ export class VideoEntity implements videoInfo {
             if (thumbnails && Array.isArray(thumbnails)) {
                 thumbs.push(...thumbnails);
             }
-        } catch (e) {}
+        } catch (e) {
+        }
 
         return thumbs;
     }

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { videoInfo } from 'ytdl-core';
+import { filterFormats, videoInfo } from 'ytdl-core';
 import cn from 'classnames';
 import styled from 'styled-components';
 import { navigate } from '@reach/router';
@@ -70,8 +70,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 track.formats.length
             ) {
                 console.log('track', track);
-
-                const [format] = track.formats;
+                const [format] = filterFormats(track.formats, 'audioonly');
 
                 try {
                     if (format.url !== audio.src) {

@@ -1,9 +1,4 @@
-import React, {
-    Context,
-    useContext,
-    useEffect,
-    useState,
-} from 'react';
+import React, { Context, useContext, useEffect, useState } from 'react';
 import throttle from 'lodash.throttle';
 
 // utils
@@ -91,7 +86,7 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
             setCurrent(getTimeString(currentTime));
             setTotal(getTimeString(duration));
         };
-         const  throttleUpdate =  throttle(timeUpdate, 500);
+        const throttleUpdate = throttle(timeUpdate, 500);
         audio.addEventListener('timeupdate', throttleUpdate);
 
         return () => audio.removeEventListener('timeupdate', throttleUpdate);

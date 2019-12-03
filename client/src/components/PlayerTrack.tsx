@@ -70,7 +70,7 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
         () => {
             if (track && track.videoFormat) {
                 const video = track.videoFormat.find(
-                    (format: videoFormat) => format.audioBitrate,
+                    (format: videoFormat) => format.bitrate,
                 );
                 if (video) {
                     setVideo(video);
