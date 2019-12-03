@@ -1,8 +1,9 @@
-import React, { useContext, useEffect } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { filterFormats, videoInfo } from 'ytdl-core';
 import cn from 'classnames';
 import styled from 'styled-components';
 import { navigate } from '@reach/router';
+import IMask from 'imask';
 
 // styles
 import './player.css';
@@ -47,7 +48,16 @@ interface GetPlaylistResponse {
     updatedAt: string;
 }
 
+const masked = IMask.createMask({
+    mask: Number,
+    radix: '.',
+    padFractionalZeros: true,
+    scale: 2,
+    normalizeZeros: true,
+});
+
 export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
+    const [speed, setSpeed] = useState<number>(1.0);
     const { audio, isPaused, playPause, skipTime } = useContext(AudioContext);
     const [playlist = [], dispatch] = useRedux<VideoState[]>(
         playlistReducer,
@@ -59,7 +69,13 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
         activeTrackReducer,
         undefined,
         {},
+        'track'
     );
+
+    useEffect(() => {
+        audio.playbackRate = speed;
+    }, [speed]);
+
 
     useEffect(
         () => {
@@ -69,13 +85,11 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 Array.isArray(track.formats) &&
                 track.formats.length
             ) {
-                console.log('track', track);
                 const [format] = filterFormats(track.formats, 'audioonly');
 
                 try {
                     if (format.url !== audio.src) {
                         audio.src = format.url;
-                        // audio.playbackRate = 1.25;
                         audio.play();
                     }
                 } catch (e) {
@@ -171,6 +185,10 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
         playPause();
     };
 
+    const onSpeedChange = () => {
+        setSpeed(speed === 1 ? 1.25 : 1);
+    };
+
     return (
         <Container>
             <div id="app-cover">
@@ -196,8 +214,8 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                     <i className="fas fa-bars" />
                                 </div>
                             </div>
-                            <div className="control">
-                                <div className="button">x1.00</div>
+                            <div className="control" onClick={onSpeedChange}>
+                                <div className="button">x{masked.resolve(String(speed))}</div>
                             </div>
                             <div className="control" onClick={skipTime(false)}>
                                 <div className="button">
