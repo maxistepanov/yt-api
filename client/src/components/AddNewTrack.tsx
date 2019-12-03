@@ -2,6 +2,10 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { validateURL, videoInfo } from 'ytdl-core';
 import useClipboard from 'react-hook-clipboard';
+import Lottie from 'lottie-react-web';
+
+// Animations
+import animation from 'images/lottie/space_loading.json';
 
 // Interfaces
 import { RouterProps } from '../interfaces';
@@ -50,7 +54,15 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
             <List>
                 {!data && (
                     <YouTubeFrameHolder>
-                        {load ? 'Load data' : 'Waiting for a link :)'}
+                        {load ? (
+                            <Lottie
+                                options={{
+                                    animationData: animation,
+                                }}
+                            />
+                        ) : (
+                            'Waiting for a link :)'
+                        )}
                     </YouTubeFrameHolder>
                 )}
                 {data && (

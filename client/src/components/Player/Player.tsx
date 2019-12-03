@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { filterFormats, videoInfo } from 'ytdl-core';
 import cn from 'classnames';
 import styled from 'styled-components';
@@ -69,13 +69,15 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
         activeTrackReducer,
         undefined,
         {},
-        'track'
+        'track',
     );
 
-    useEffect(() => {
-        audio.playbackRate = speed;
-    }, [speed]);
-
+    useEffect(
+        () => {
+            audio.playbackRate = speed;
+        },
+        [speed],
+    );
 
     useEffect(
         () => {
@@ -215,7 +217,9 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                 </div>
                             </div>
                             <div className="control" onClick={onSpeedChange}>
-                                <div className="button">x{masked.resolve(String(speed))}</div>
+                                <div className="button">
+                                    x{masked.resolve(String(speed))}
+                                </div>
                             </div>
                             <div className="control" onClick={skipTime(false)}>
                                 <div className="button">

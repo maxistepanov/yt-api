@@ -70,7 +70,7 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
         () => {
             if (track && track.videoFormat) {
                 const video = track.videoFormat.find(
-                    (format: videoFormat) => format.bitrate,
+                    (format: videoFormat) => !!format.bitrate,
                 );
                 if (video) {
                     setVideo(video);
@@ -140,7 +140,7 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
     const getSeekTime = (clientX: number): number => {
         const { current: area } = seekAreaRef;
         if (area) {
-            const rect: DOMRect = area.getBoundingClientRect();
+            const rect: ClientRect | DOMRect = area.getBoundingClientRect();
             return clientX - rect.left;
         }
         return 0;
