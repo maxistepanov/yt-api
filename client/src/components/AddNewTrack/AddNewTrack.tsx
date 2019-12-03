@@ -1,13 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { validateURL, videoInfo } from 'ytdl-core';
 import useClipboard from 'react-hook-clipboard';
 
 // Interfaces
-import { RouterProps } from '../interfaces';
+import { RouterProps } from '../../interfaces';
 
 // Hooks
-import { useApi, useApiInstance } from '../hooks/useApi';
+import { useApi, useApiInstance } from '../../hooks/useApi';
+
+// components
+import { PlanetLoader } from '../PlanetLoader';
+import { AddButton } from '../AddButton';
+
+// styles
+import {
+    Container,
+    Input,
+    List,
+    Title,
+    YouTubeFrame,
+    YouTubeFrameHolder,
+} from './styles';
 
 interface AddNewTrackProps extends RouterProps {
     onSubmit: any;
@@ -50,7 +63,7 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
             <List>
                 {!data && (
                     <YouTubeFrameHolder>
-                        {load ? 'Load data' : 'Waiting for a link :)'}
+                        {load ? <PlanetLoader /> : 'Waiting for a link :)'}
                     </YouTubeFrameHolder>
                 )}
                 {data && (
@@ -68,68 +81,14 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
                     disabled={load}
                     onChange={event => setText(event.target.value)}
                 />
-                <div className="control">
-                    <div
-                        className="button"
-                        onClick={() => !load && data && onSubmit(data)}
-                    >
-                        <i className="fas fa-plus" />
-                    </div>
-                </div>
+                <AddButton
+                    onClick={() => !load && data && onSubmit(data)}
+                    isPaused={!data}
+                    isStopped={!data}
+                    height={150}
+                    width={150}
+                />
             </List>
         </Container>
     );
 };
-
-const containerHeight = 450;
-
-const Container = styled.div`
-    padding: 15px;
-    height: ${containerHeight}px;
-    background-color: #fff7f7;
-    border-radius: 15px 15px 0 0;
-    transition: 0.3s ease transform, opacity;
-    z-index: 1;
-`;
-
-const frameHeight = 180;
-
-const YouTubeFrame = styled.iframe`
-    border-radius: 10px;
-    background: #ececec;
-    height: ${frameHeight}px;
-`;
-
-const YouTubeFrameHolder = styled.div`
-    width: 100%;
-    border-radius: 10px;
-    background: #ececec;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: ${frameHeight}px;
-`;
-
-const Input = styled.input`
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 10px;
-    box-shadow: none;
-    outline: none;
-    border: solid 1px #ececec;
-    flex: 1;
-`;
-
-const Title = styled.h3`
-    color: #5a5858;
-`;
-
-const List = styled.div`
-    display: flex;
-    flex-direction: column;
-`;
-
-const Label = styled.span`
-    color: #5a5858;
-    margin: 0 5px 0 5px;
-`;

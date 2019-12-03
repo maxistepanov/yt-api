@@ -1,17 +1,18 @@
-import React, { useContext, useEffect } from 'react';
-import { videoInfo } from 'ytdl-core';
+import React, { useContext, useEffect, useState } from 'react';
+import { filterFormats, videoInfo } from 'ytdl-core';
 import cn from 'classnames';
 import styled from 'styled-components';
 import { navigate } from '@reach/router';
+import IMask from 'imask';
+import { useDispatch, useSelector } from 'react-redux';
 
 // styles
 import './player.css';
 
 // components
-import { AlbumArt } from '../AlbumArt';
 import { BgArtwork } from '../BgArtwork';
-import { PlayerTrack } from '../PlayerTrack';
-import { AddNewTrack } from '../AddNewTrack';
+import { PlayerTrack } from '../PlayerTrack/PlayerTrack';
+import { AddNewTrack } from '../AddNewTrack/AddNewTrack';
 import { PlayList } from '../PlayList';
 
 // router
@@ -22,18 +23,15 @@ import { AudioContext } from '../../contexts/AudioContext';
 
 // hooks
 import { useApi, useApiInstance } from '../../hooks/useApi';
-import { useRedux } from '../../hooks/useRedux';
 
 // interfaces
 import { VideoState } from '../../interfaces';
 
-// reducers
-import { playlistReducer } from '../../reducers/playlist.reducer';
-import { activeTrackReducer } from '../../reducers/activeTrack.reducer';
-
 // selectors
 import { thumbnailSelector } from '../../selectors';
-import { playlistSelector } from '../../selectors/playlist.selector';
+import { playlistSelector } from '../../features/playlist/playlistSelector';
+import { trackActions } from 'features/track/trackSlice';
+import { playlistActions } from '../../features/playlist/playlistSlice';
 
 interface VideoProps {
     data?: videoInfo;
@@ -47,19 +45,27 @@ interface GetPlaylistResponse {
     updatedAt: string;
 }
 
+const masked = IMask.createMask({
+    mask: Number,
+    radix: '.',
+    padFractionalZeros: true,
+    scale: 2,
+    normalizeZeros: true,
+});
+
 export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
-    const { audio, isPaused, playPause, skipTime } = useContext(AudioContext);
-    const [playlist = [], dispatch] = useRedux<VideoState[]>(
-        playlistReducer,
-        [],
-        {},
-        'videoState',
-    );
-    const [track, trackDispatch] = useRedux<VideoState[]>(
-        activeTrackReducer,
-        undefined,
-        {},
-    );
+    const {
+        audio,
+        isPaused,
+        playPause,
+        skipTime,
+        ...audioService
+    } = useContext(AudioContext);
+
+    const dispatch = useDispatch();
+
+    const track = useSelector((state: any) => state.track);
+    const playlist = useSelector((state: any) => state.playlist);
 
     useEffect(
         () => {
@@ -69,14 +75,11 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 Array.isArray(track.formats) &&
                 track.formats.length
             ) {
-                console.log('track', track);
-
-                const [format] = track.formats;
+                const [format] = filterFormats(track.formats, 'audioonly');
 
                 try {
                     if (format.url !== audio.src) {
                         audio.src = format.url;
-                        // audio.playbackRate = 1.25;
                         audio.play();
                     }
                 } catch (e) {
@@ -94,13 +97,12 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     const onNewTrack = async (video: videoInfo) => {
         navigate('playlist');
 
-        dispatch({
-            type: 'add',
-            payload: {
+        dispatch(
+            playlistActions.add({
                 ...video,
                 saved: false,
-            },
-        });
+            }),
+        );
 
         const res = await post('add-video', {
             video: {
@@ -109,35 +111,29 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
             },
         });
 
-        dispatch({
-            type: 'update',
-            payload: {
+        dispatch(
+            playlistActions.updateOne({
                 ...res,
                 saved: true,
-            },
-        });
+            }),
+        );
     };
 
     useEffect(() => {
         get('/get-playlist').then((payload: GetPlaylistResponse[]) => {
-            dispatch({
-                type: 'updatePlaylist',
-                payload: payload.map(
-                    ({ json, ...rest }: GetPlaylistResponse) => ({
-                        saved: true,
-                        ...json,
-                        ...rest,
-                    }),
-                ),
-            });
+            const data: any = payload.map(
+                ({ json, ...rest }: GetPlaylistResponse) => ({
+                    saved: true,
+                    ...json,
+                    ...rest,
+                }),
+            );
+            dispatch(playlistActions.updateAll(data));
         });
     }, []);
 
     const onSelectTrack = (payload: VideoState) => {
-        trackDispatch({
-            type: 'set',
-            payload,
-        });
+        dispatch(trackActions.set(payload));
     };
 
     const onRemove = (video: VideoState) => {
@@ -164,7 +160,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
         if (!track && Array.isArray(list) && list.length) {
             const [firstTrack] = list;
 
-            onSelectTrack(firstTrack);
+            trackActions.set(firstTrack);
             playPause();
             return;
         }
@@ -197,8 +193,15 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                     <i className="fas fa-bars" />
                                 </div>
                             </div>
-                            <div className="control">
-                                <div className="button">x1.00</div>
+                            <div
+                                className="control"
+                                onClick={audioService.playBackToggle}
+                            >
+                                <div className="button">
+                                    x{masked.resolve(
+                                        String(audioService.speed),
+                                    )}
+                                </div>
                             </div>
                             <div className="control" onClick={skipTime(false)}>
                                 <div className="button">

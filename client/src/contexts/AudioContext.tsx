@@ -1,9 +1,4 @@
-import React, {
-    Context,
-    useContext,
-    useEffect,
-    useState,
-} from 'react';
+import React, { Context, useContext, useEffect, useState } from 'react';
 import throttle from 'lodash.throttle';
 
 // utils
@@ -16,9 +11,11 @@ export interface AudioPlayerInstance {
     playPause: any;
     skipTime(forward?: boolean): any;
     setCurrentTime(time: number): any;
+    playBackToggle(): void;
     progress: number;
     total: string;
     current: string;
+    speed: number;
 }
 
 export const AudioContext: Context<AudioPlayerInstance> = React.createContext<
@@ -30,8 +27,10 @@ export const AudioContext: Context<AudioPlayerInstance> = React.createContext<
     setPaused: () => {},
     playPause: () => {},
     setCurrentTime: () => {},
+    playBackToggle: () => {},
     skipTime: () => () => {},
     total: '',
+    speed: 1,
     audio: new Audio(),
 });
 
@@ -43,7 +42,7 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
     children,
 }) => {
     const context = useContext(AudioContext);
-
+    const [speed, setSpeed] = useState<number>(1.0);
     const [isPaused, setPaused] = useState<boolean>(true);
     const [progress, setProgress] = useState<number>(0);
     const [total, setTotal] = useState<string>('00:00');
@@ -91,7 +90,7 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
             setCurrent(getTimeString(currentTime));
             setTotal(getTimeString(duration));
         };
-         const  throttleUpdate =  throttle(timeUpdate, 500);
+        const throttleUpdate = throttle(timeUpdate, 500);
         audio.addEventListener('timeupdate', throttleUpdate);
 
         return () => audio.removeEventListener('timeupdate', throttleUpdate);
@@ -115,12 +114,30 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
         }
     };
 
+    const setPlaybackRate = (rate: number) => {
+        const { audio } = context;
+        if (audio.src && rate) {
+            audio.playbackRate = rate;
+        }
+    };
+
     const skipTime = (forward: boolean = true) => (
         event: React.MouseEvent<HTMLDivElement>,
     ) => {
         const { audio } = context;
 
         audio && (audio.currentTime += forward ? 5 : -5);
+    };
+
+    useEffect(
+        () => {
+            setPlaybackRate(speed);
+        },
+        [speed],
+    );
+
+    const playBackToggle = () => {
+        setSpeed(speed === 1 ? 1.25 : 1);
     };
 
     return (
@@ -132,9 +149,11 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
                 progress,
                 total,
                 current,
+                speed,
                 playPause,
                 skipTime,
                 setCurrentTime,
+                playBackToggle,
             }}
         >
             {children}

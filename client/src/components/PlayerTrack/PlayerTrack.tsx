@@ -3,20 +3,23 @@ import styled, { css } from 'styled-components';
 import { format } from 'date-fns';
 
 // utils
-import { getTimeString, getValueInBetween } from '../utils';
+import { getTimeString, getValueInBetween } from '../../utils';
 
 // contexts
-import { AudioContext } from '../contexts/AudioContext';
+import { AudioContext } from '../../contexts/AudioContext';
 
 // interfaces
-import { RouterProps, VideoState } from '../interfaces';
+import { RouterProps, VideoState } from '../../interfaces';
 import { videoFormat } from 'ytdl-core';
 
 // selectors
-import { thumbnailSelector } from '../selectors';
+import { thumbnailSelector } from '../../selectors';
 
 // components
-import { AlbumArt } from './AlbumArt';
+import { AlbumArt } from '../AlbumArt';
+
+// styles
+import { AlbumName, AlbumNameWrapper, Point, TimePicker } from './styles';
 
 interface PlayerTrackProps extends RouterProps {
     track?: VideoState;
@@ -70,7 +73,7 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
         () => {
             if (track && track.videoFormat) {
                 const video = track.videoFormat.find(
-                    (format: videoFormat) => format.audioBitrate,
+                    (format: videoFormat) => !!format.bitrate,
                 );
                 if (video) {
                     setVideo(video);
@@ -140,7 +143,7 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
     const getSeekTime = (clientX: number): number => {
         const { current: area } = seekAreaRef;
         if (area) {
-            const rect: DOMRect = area.getBoundingClientRect();
+            const rect: ClientRect | DOMRect = area.getBoundingClientRect();
             return clientX - rect.left;
         }
         return 0;
@@ -243,38 +246,3 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
         </div>
     );
 };
-
-const AlbumName = styled.div`
-    color: #54576f;
-    font-size: 17px;
-    font-weight: bold;
-    animation: marquee 15s ease-in-out infinite;
-    white-space: nowrap;
-`;
-
-const AlbumNameWrapper = styled.div`
-    position: relative;
-    width: 100%;
-    overflow: hidden;
-`;
-
-const Video = styled.video`
-    width: 100%;
-`;
-
-const TimePicker = styled.span`
-    display: inline-block;
-    position: absolute;
-    bottom: -17px;
-    padding: 20px;
-    z-index: 50;
-    left: 0px;
-`;
-
-const Point = styled.span`
-    width: 10px;
-    height: 10px;
-    background: red;
-    display: inline-block;
-    border-radius: 50%;
-`;
