@@ -1,28 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import { validateURL, videoInfo } from 'ytdl-core';
+import {validateURL, videoInfo} from 'ytdl-core';
 import useClipboard from 'react-hook-clipboard';
 import Lottie from 'lottie-react-web';
 
 // Animations
 import animation from 'images/lottie/space_loading.json';
+import addAnimation from 'images/lottie/add.json';
 
 // Interfaces
-import { RouterProps } from '../interfaces';
+import {RouterProps} from '../interfaces';
 
 // Hooks
-import { useApi, useApiInstance } from '../hooks/useApi';
+import {useApi, useApiInstance} from '../hooks/useApi';
 
 interface AddNewTrackProps extends RouterProps {
     onSubmit: any;
 }
 
-export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
+export const AddNewTrack: React.FC<AddNewTrackProps> = ({onSubmit}) => {
     const [text, setText] = useState<string>('');
     const [load, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<videoInfo>();
-    const { get }: useApiInstance = useApi();
-    const [clipboard] = useClipboard({ updateFrequency: 300 });
+    const {get}: useApiInstance = useApi();
+    const [clipboard] = useClipboard({updateFrequency: 300});
 
     useEffect(
         () => {
@@ -80,13 +81,24 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
                     disabled={load}
                     onChange={event => setText(event.target.value)}
                 />
-                <div className="control">
-                    <div
-                        className="button"
-                        onClick={() => !load && data && onSubmit(data)}
-                    >
-                        <i className="fas fa-plus" />
-                    </div>
+                {/*<div className="control">*/}
+                {/*<div*/}
+                {/*className="button"*/}
+                {/*onClick={() => !load && data && onSubmit(data)}*/}
+                {/*>*/}
+                {/*</div>*/}
+                {/**/}
+                {/*</div>*/}
+                <div onClick={() => !load && data && onSubmit(data)}>
+                    <Lottie
+                        options={{
+                            animationData: addAnimation,
+                        }}
+                        height={150}
+                        width={150}
+                        isPaused={!data}
+                        isStopped={!data}
+                    />
                 </div>
             </List>
         </Container>
