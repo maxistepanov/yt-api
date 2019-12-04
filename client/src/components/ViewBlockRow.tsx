@@ -1,13 +1,13 @@
-import React, { useContext } from 'react';
-import { VideoState } from '../interfaces';
+import React, {useContext} from 'react';
+import {VideoState} from '../interfaces';
 import styled from 'styled-components';
 import {
     selectTrackStore,
     thumbnailSelector,
 } from '../features/track/trackSelectors';
-import { Playing } from './Playing';
-import { useSelector } from 'react-redux';
-import { AudioContext, AudioPlayerInstance } from '../contexts/AudioContext';
+import {Playing} from './Playing';
+import {useSelector} from 'react-redux';
+import {AudioContext, AudioPlayerInstance} from '../contexts/AudioContext';
 
 interface ViewBlockRowProps {
     onSelect: any;
@@ -16,26 +16,26 @@ interface ViewBlockRowProps {
 }
 
 export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
-    onSelect,
-    video,
-    onRemove,
-}) => {
-    const { video_id, title } = video;
-    const { isPaused }: AudioPlayerInstance = useContext(AudioContext);
+                                                              onSelect,
+                                                              video,
+                                                              onRemove,
+                                                          }) => {
+    const {video_id, title} = video;
+    const {isPaused}: AudioPlayerInstance = useContext(AudioContext);
 
     const track: VideoState = useSelector(selectTrackStore);
 
     return (
         <PlayItem key={video_id} onClick={() => onSelect(video)}>
-            <Thumbnail src={thumbnailSelector(video)} />
-            <Background />
+            <Thumbnail src={thumbnailSelector(video)}/>
+            <Background/>
             <PlayTitle> {title}</PlayTitle>
             {track &&
-                track.video_id === video_id && (
-                    <PlayingContainer>
-                        <Playing height={200} isPaused={isPaused}/>
-                    </PlayingContainer>
-                )}
+            track.video_id === video_id && (
+                <PlayingContainer>
+                    <Playing height={200} isPaused={isPaused}/>
+                </PlayingContainer>
+            )}
         </PlayItem>
     );
 };
@@ -93,6 +93,11 @@ const PlayTitle = styled.span`
 const PlayingContainer = styled.div`
     position: absolute;
     z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     path {
         fill: white;
     }
