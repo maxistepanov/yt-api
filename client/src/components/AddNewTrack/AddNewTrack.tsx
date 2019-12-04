@@ -30,29 +30,23 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
     const [data, setData] = useState<videoInfo>();
     const [clipboard] = useClipboard({ updateFrequency: 300 });
 
-    useEffect(
-        () => {
-            if (validateURL(String(clipboard).trim())) {
-                setText(String(clipboard).trim());
-            }
-        },
-        [clipboard],
-    );
+    useEffect(() => {
+        if (validateURL(String(clipboard).trim())) {
+            setText(String(clipboard).trim());
+        }
+    }, [clipboard]);
 
-    useEffect(
-        () => {
-            if (validateURL(text)) {
-                setLoading(true);
-                ApiService.get<videoInfo>('get-info?url=' + text)
-                    .then((data: videoInfo) => {
-                        setLoading(false);
-                        setData(data);
-                    })
-                    .catch(err => setLoading(false));
-            }
-        },
-        [text],
-    );
+    useEffect(() => {
+        if (validateURL(text)) {
+            setLoading(true);
+            ApiService.get<videoInfo>('get-info?url=' + text)
+                .then((data: videoInfo) => {
+                    setLoading(false);
+                    setData(data);
+                })
+                .catch(err => setLoading(false));
+        }
+    }, [text]);
 
     return (
         <Container>

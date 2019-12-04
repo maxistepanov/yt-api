@@ -69,19 +69,16 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
         return () => window.removeEventListener('mouseup', fn);
     }, []);
 
-    useEffect(
-        () => {
-            if (track && track.videoFormat) {
-                const video = track.videoFormat.find(
-                    (format: videoFormat) => !!format.bitrate,
-                );
-                if (video) {
-                    setVideo(video);
-                }
+    useEffect(() => {
+        if (track && track.videoFormat) {
+            const video = track.videoFormat.find(
+                (format: videoFormat) => !!format.bitrate,
+            );
+            if (video) {
+                setVideo(video);
             }
-        },
-        [track],
-    );
+        }
+    }, [track]);
 
     const getProgressInPx = (progress: number) => {
         return (offsetWidth / 100) * progress;
@@ -186,16 +183,12 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
                     <AlbumNameWrapper>
                         <AlbumName>{track.title}</AlbumName>
                     </AlbumNameWrapper>
-                    {track.author &&
-                        track.published && (
-                            <div id="track-name">
-                                {track.author.name} -{' '}
-                                {format(
-                                    new Date(track.published),
-                                    'dd MMMM yyyy',
-                                )}{' '}
-                            </div>
-                        )}
+                    {track.author && track.published && (
+                        <div id="track-name">
+                            {track.author.name} -{' '}
+                            {format(new Date(track.published), 'dd MMMM yyyy')}{' '}
+                        </div>
+                    )}
                 </React.Fragment>
             )}
             <div id="track-time" className="active">
@@ -251,7 +244,6 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
         </div>
     );
 };
-
 
 const ModeContainer = styled.div`
     display: flex;

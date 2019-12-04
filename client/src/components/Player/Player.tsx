@@ -65,37 +65,35 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     const track = useSelector(selectTrackStore);
     const playlist = useSelector(selectPlaylist);
 
-    useEffect(
-        () => {
-            if (
-                audio &&
-                track &&
-                Array.isArray(track.formats) &&
-                track.formats.length
-            ) {
-                const hasVideo = (format: any) => !!format.qualityLabel;
-                const hasAudio = (format: any) => !!format.audioBitrate;
+    useEffect(() => {
+        if (
+            audio &&
+            track &&
+            Array.isArray(track.formats) &&
+            track.formats.length
+        ) {
+            const hasVideo = (format: any) => !!format.qualityLabel;
+            const hasAudio = (format: any) => !!format.audioBitrate;
 
-                const audioFormats = track.formats.filter((format: any) => {
-                    return !hasVideo(format) && hasAudio(format);
-                });
+            const audioFormats = track.formats.filter((format: any) => {
+                return !hasVideo(format) && hasAudio(format);
+            });
 
-                const [format] = audioFormats;
+            const [format] = audioFormats;
 
-                try {
-                    if (format.url !== audio.src) {
-                        audio.src = format.url;
-                        audio.play();
-                    }
-                } catch (e) {
-                    console.log('err', e);
+            try {
+                if (format.url !== audio.src) {
+                    audio.src = format.url;
+                    audio.play();
+                    audio.playbackRate = audioService.speed;
                 }
-            } else {
-                console.warn('audio is empty');
+            } catch (e) {
+                console.log('err', e);
             }
-        },
-        [track],
-    );
+        } else {
+            console.warn('audio is empty');
+        }
+    }, [track]);
 
     const { post, get }: useApiInstance = useApi();
 
@@ -194,9 +192,8 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                 onClick={audioService.playBackToggle}
                             >
                                 <div className="button">
-                                    x{masked.resolve(
-                                        String(audioService.speed),
-                                    )}
+                                    x
+                                    {masked.resolve(String(audioService.speed))}
                                 </div>
                             </div>
                             <div className="control" onClick={skipTime(false)}>

@@ -28,46 +28,42 @@ export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
 
     const track: VideoState = useSelector(selectTrackStore);
 
-    useEffect(
-        () => {
-            if (
-                itemRef &&
-                itemRef.current &&
-                track &&
-                track.video_id === video_id
-            ) {
-                const scrollIntoView = (ref: HTMLDivElement | null) => {
-                    if (ref) {
-                        ref.scrollIntoView({
-                            behavior: 'smooth',
-                        });
-                    }
-                };
+    useEffect(() => {
+        if (
+            itemRef &&
+            itemRef.current &&
+            track &&
+            track.video_id === video_id
+        ) {
+            const scrollIntoView = (ref: HTMLDivElement | null) => {
+                if (ref) {
+                    ref.scrollIntoView({
+                        behavior: 'smooth',
+                    });
+                }
+            };
 
-                setTimeout(() => scrollIntoView(itemRef.current), 300);
-            }
-        },
-        [itemRef.current, track, video_id],
-    );
+            setTimeout(() => scrollIntoView(itemRef.current), 300);
+        }
+    }, [itemRef.current, track, video_id]);
 
     return (
         <PlayItem key={video_id} onClick={() => onSelect(video)} ref={itemRef}>
             <Thumbnail src={thumbnailSelector(video)} />
             <Background />
             <PlayTitle> {title}</PlayTitle>
-            {track &&
-                track.video_id === video_id && (
-                    <React.Fragment>
-                        <PlayingContainer>
-                            <Playing height={200} isPaused={isPaused} />
-                        </PlayingContainer>
-                        <Progress
-                            style={{
-                                width: progress + '%',
-                            }}
-                        />
-                    </React.Fragment>
-                )}
+            {track && track.video_id === video_id && (
+                <React.Fragment>
+                    <PlayingContainer>
+                        <Playing height={100} isPaused={isPaused} />
+                    </PlayingContainer>
+                    <Progress
+                        style={{
+                            width: progress + '%',
+                        }}
+                    />
+                </React.Fragment>
+            )}
         </PlayItem>
     );
 };
@@ -140,5 +136,5 @@ const Progress = styled.div`
     z-index: 10;
     height: 5px;
     background: red;
-    bottom: 2px;
+    bottom: 0;
 `;
