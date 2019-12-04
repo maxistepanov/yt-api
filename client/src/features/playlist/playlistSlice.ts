@@ -24,6 +24,9 @@ const playlistSlice = createSlice({
             return action.payload;
         },
         delete(state: any, action: PayloadAction<any>) {},
+        getPlaylist(state: any) {
+            return state;
+        },
     },
     extraReducers: {},
 });

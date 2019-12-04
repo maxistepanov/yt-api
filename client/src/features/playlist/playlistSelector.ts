@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect';
 import { VideoState } from 'interfaces';
 
+export const selectPlaylist = (state: any) => state.playlist;
+
 export const playlistSelector = createSelector(
     (state: any) => state,
     (state: VideoState[]): VideoState[] => {

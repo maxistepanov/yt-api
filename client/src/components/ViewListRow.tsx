@@ -1,7 +1,7 @@
 import React from 'react';
 import { VideoState } from '../interfaces';
-import { thumbnailSelector } from '../selectors';
 import styled from 'styled-components';
+import { thumbnailSelector } from '../features/track/trackSelectors';
 
 interface ViewListRowProps {
     onSelect: any;

@@ -45,3 +45,10 @@ export interface VideoDetails {
     author: string;
     isLiveContent: boolean;
 }
+
+export interface LottieOptions {
+    isPaused?: boolean;
+    isStopped?: boolean;
+    height?: number;
+    width?: number;
+}

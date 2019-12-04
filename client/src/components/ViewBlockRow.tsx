@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { VideoState } from '../interfaces';
-import { thumbnailSelector } from '../selectors';
 import styled from 'styled-components';
+import {
+    selectTrackStore,
+    thumbnailSelector,
+} from '../features/track/trackSelectors';
+import { Playing } from './Playing';
+import { useSelector } from 'react-redux';
+import { AudioContext, AudioPlayerInstance } from '../contexts/AudioContext';
 
 interface ViewBlockRowProps {
     onSelect: any;
@@ -15,11 +21,21 @@ export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
     onRemove,
 }) => {
     const { video_id, title } = video;
+    const { isPaused }: AudioPlayerInstance = useContext(AudioContext);
+
+    const track: VideoState = useSelector(selectTrackStore);
+
     return (
         <PlayItem key={video_id} onClick={() => onSelect(video)}>
             <Thumbnail src={thumbnailSelector(video)} />
             <Background />
             <PlayTitle> {title}</PlayTitle>
+            {track &&
+                track.video_id === video_id && (
+                    <PlayingContainer>
+                        <Playing height={200} isPaused={isPaused}/>
+                    </PlayingContainer>
+                )}
         </PlayItem>
     );
 };
@@ -72,4 +88,12 @@ const PlayTitle = styled.span`
     color: white;
     z-index: 15;
     padding: 12px;
+`;
+
+const PlayingContainer = styled.div`
+    position: absolute;
+    z-index: 10;
+    path {
+        fill: white;
+    }
 `;

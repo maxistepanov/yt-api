@@ -22,7 +22,7 @@ export const AudioContext: Context<AudioPlayerInstance> = React.createContext<
     AudioPlayerInstance
 >({
     current: '',
-    isPaused: false,
+    isPaused: true,
     progress: 0,
     setPaused: () => {},
     playPause: () => {},

@@ -29,7 +29,6 @@ export const PlayList: React.FC<PlayListProps> = ({
     const [type, setType] = useState(PlayListView.block);
 
     const Row = type === PlayListView.block ? ViewBlockRow : ViewListRow;
-
     return (
         <BorderRadius>
             <Container type={type}>

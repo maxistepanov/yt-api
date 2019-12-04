@@ -28,10 +28,16 @@ import { useApi, useApiInstance } from '../../hooks/useApi';
 import { VideoState } from '../../interfaces';
 
 // selectors
-import { thumbnailSelector } from '../../selectors';
-import { playlistSelector } from '../../features/playlist/playlistSelector';
+import {
+    playlistSelector,
+    selectPlaylist,
+} from '../../features/playlist/playlistSelector';
 import { trackActions } from 'features/track/trackSlice';
 import { playlistActions } from '../../features/playlist/playlistSlice';
+import {
+    selectTrackStore,
+    thumbnailSelector,
+} from '../../features/track/trackSelectors';
 
 interface VideoProps {
     data?: videoInfo;
@@ -64,8 +70,8 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
 
     const dispatch = useDispatch();
 
-    const track = useSelector((state: any) => state.track);
-    const playlist = useSelector((state: any) => state.playlist);
+    const track = useSelector(selectTrackStore);
+    const playlist = useSelector(selectPlaylist);
 
     useEffect(
         () => {
@@ -120,16 +126,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     };
 
     useEffect(() => {
-        get('/get-playlist').then((payload: GetPlaylistResponse[]) => {
-            const data: any = payload.map(
-                ({ json, ...rest }: GetPlaylistResponse) => ({
-                    saved: true,
-                    ...json,
-                    ...rest,
-                }),
-            );
-            dispatch(playlistActions.updateAll(data));
-        });
+        dispatch(playlistActions.getPlaylist());
     }, []);
 
     const onSelectTrack = (payload: VideoState) => {

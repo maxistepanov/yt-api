@@ -3,13 +3,10 @@ import Lottie from 'lottie-react-web';
 
 // animation
 import animationData from 'images/lottie/add.json';
+import { LottieOptions } from '../interfaces';
 
-interface AddButtonProps {
+interface AddButtonProps extends LottieOptions {
     onClick: any;
-    isPaused: boolean;
-    isStopped: boolean;
-    height: number;
-    width: number;
 }
 
 export const AddButton: React.FC<AddButtonProps> = props => {

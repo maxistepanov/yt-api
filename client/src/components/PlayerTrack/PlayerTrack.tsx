@@ -13,7 +13,7 @@ import { RouterProps, VideoState } from '../../interfaces';
 import { videoFormat } from 'ytdl-core';
 
 // selectors
-import { thumbnailSelector } from '../../selectors';
+import { thumbnailSelector } from '../../features/track/trackSelectors';
 
 // components
 import { AlbumArt } from '../AlbumArt';

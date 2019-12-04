@@ -5,9 +5,6 @@ import useClipboard from 'react-hook-clipboard';
 // Interfaces
 import { RouterProps } from '../../interfaces';
 
-// Hooks
-import { useApi, useApiInstance } from '../../hooks/useApi';
-
 // components
 import { PlanetLoader } from '../PlanetLoader';
 import { AddButton } from '../AddButton';
@@ -21,6 +18,7 @@ import {
     YouTubeFrame,
     YouTubeFrameHolder,
 } from './styles';
+import ApiService from '../../services/ApiService';
 
 interface AddNewTrackProps extends RouterProps {
     onSubmit: any;
@@ -30,7 +28,6 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
     const [text, setText] = useState<string>('');
     const [load, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<videoInfo>();
-    const { get }: useApiInstance = useApi();
     const [clipboard] = useClipboard({ updateFrequency: 300 });
 
     useEffect(
@@ -46,7 +43,7 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
         () => {
             if (validateURL(text)) {
                 setLoading(true);
-                get<videoInfo>('get-info?url=' + text)
+                ApiService.get<videoInfo>('get-info?url=' + text)
                     .then((data: videoInfo) => {
                         setLoading(false);
                         setData(data);
