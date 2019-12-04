@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, {useContext, useRef, useEffect} from 'react';
 import { VideoState } from '../interfaces';
 import styled from 'styled-components';
 import {
@@ -20,21 +20,47 @@ export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
     video,
     onRemove,
 }) => {
+    const itemRef = useRef<HTMLDivElement>(null);
     const { video_id, title } = video;
-    const { isPaused }: AudioPlayerInstance = useContext(AudioContext);
+    const { isPaused, progress }: AudioPlayerInstance = useContext(
+        AudioContext,
+    );
 
     const track: VideoState = useSelector(selectTrackStore);
 
+    useEffect(() => {
+        if (itemRef && itemRef.current && track && track.video_id === video_id) {
+            const scrollIntoView = (ref: HTMLDivElement | null) => {
+                if (ref) {
+                    ref.scrollIntoView({
+                        behavior: "smooth"
+                    });
+                }
+            };
+
+            setTimeout(() => scrollIntoView(itemRef.current), 300);
+
+        }
+
+    }, [itemRef.current, track, video_id]);
+
     return (
-        <PlayItem key={video_id} onClick={() => onSelect(video)}>
+        <PlayItem key={video_id} onClick={() => onSelect(video)} ref={itemRef}>
             <Thumbnail src={thumbnailSelector(video)} />
             <Background />
             <PlayTitle> {title}</PlayTitle>
             {track &&
                 track.video_id === video_id && (
-                    <PlayingContainer>
-                        <Playing height={200} isPaused={isPaused} />
-                    </PlayingContainer>
+                    <React.Fragment>
+                        <PlayingContainer>
+                            <Playing height={200} isPaused={isPaused} />
+                        </PlayingContainer>
+                        <Progress
+                            style={{
+                                width: progress + '%',
+                            }}
+                        />
+                    </React.Fragment>
                 )}
         </PlayItem>
     );
@@ -101,4 +127,12 @@ const PlayingContainer = styled.div`
     path {
         fill: white;
     }
+`;
+
+const Progress = styled.div`
+    position: absolute;
+    z-index: 10;
+    height: 5px;
+    background: red;
+    bottom: 2px;
 `;
