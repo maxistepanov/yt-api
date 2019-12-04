@@ -43,14 +43,6 @@ interface VideoProps {
     data?: videoInfo;
 }
 
-interface GetPlaylistResponse {
-    id: number;
-    name: string;
-    json: videoInfo;
-    createdAt: string;
-    updatedAt: string;
-}
-
 const masked = IMask.createMask({
     mask: Number,
     radix: '.',
