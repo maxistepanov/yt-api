@@ -176,6 +176,11 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
     return (
         <div id="player-track" className="active">
             <AlbumArt src={thumbnailSelector(track)} isPaused={isPaused} />
+            <ModeContainer>
+                <ModeIcon className="fas fa-podcast" />
+                <ModeIcon className="fas fa-video" />
+                <ModeIcon className="fas fa-closed-captioning" />
+            </ModeContainer>
             {track && (
                 <React.Fragment>
                     <AlbumNameWrapper>
@@ -246,3 +251,22 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
         </div>
     );
 };
+
+
+const ModeContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+`;
+
+const ModeIcon = styled.i`
+    padding: 8px;
+    font-size: 20px;
+    color: #54576f;
+    opacity: 0.5;
+    transition: opacity 0.2s ease-in-out;
+    cursor: pointer;
+    &:hover {
+        opacity: 1;
+    }
+`;
