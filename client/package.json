@@ -4,11 +4,13 @@
   "private": true,
   "dependencies": {
     "@reach/router": "^1.2.1",
+    "@reduxjs/toolkit": "^1.1.0",
     "axios": "^0.19.0",
     "classnames": "^2.2.6",
     "date-fns": "^2.8.1",
     "imask": "^5.2.1",
     "lodash.throttle": "^4.1.1",
+    "lottie-react-web": "^2.1.4",
     "perfect-scrollbar": "^1.4.0",
     "qs": "^6.9.1",
     "react": "^16.12.0",

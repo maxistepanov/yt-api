@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { filterFormats, videoInfo } from 'ytdl-core';
+import { videoInfo } from 'ytdl-core';
 import cn from 'classnames';
 import styled from 'styled-components';
 import { navigate } from '@reach/router';
@@ -81,7 +81,14 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 Array.isArray(track.formats) &&
                 track.formats.length
             ) {
-                const [format] = filterFormats(track.formats, 'audioonly');
+                const hasVideo = (format: any) => !!format.qualityLabel;
+                const hasAudio = (format: any) => !!format.audioBitrate;
+
+                const audioFormats = track.formats.filter((format: any) => {
+                    return !hasVideo(format) && hasAudio(format);
+                });
+
+                const [format] = audioFormats;
 
                 try {
                     if (format.url !== audio.src) {
@@ -89,7 +96,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                         audio.play();
                     }
                 } catch (e) {
-                    console.log('err');
+                    console.log('err', e);
                 }
             } else {
                 console.warn('audio is empty');
