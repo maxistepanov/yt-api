@@ -129,9 +129,12 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
         audio && (audio.currentTime += forward ? 5 : -5);
     };
 
-    useEffect(() => {
-        setPlaybackRate(speed);
-    }, [speed]);
+    useEffect(
+        () => {
+            setPlaybackRate(speed);
+        },
+        [speed],
+    );
 
     const playBackToggle = () => {
         setSpeed(speed === 1 ? 1.25 : 1);

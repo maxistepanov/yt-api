@@ -1,8 +1,9 @@
 import React from 'react';
 import cn from 'classnames';
 import styled, { keyframes } from 'styled-components';
+import { RouterProps } from '../interfaces';
 
-interface AlbumArtProps {
+interface AlbumArtProps extends RouterProps {
     isPaused: boolean;
     src?: string;
 }

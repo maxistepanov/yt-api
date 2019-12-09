@@ -7,6 +7,7 @@ export interface ActionType {
 
 export interface RouterProps {
     path?: string;
+    default?: boolean;
 }
 
 export interface ReactChildren {
@@ -25,6 +26,17 @@ export interface VideoState extends videoInfo {
     createdAt: string;
     thumbnails: Thumbnail[];
     videoFormat: videoFormat[];
+    player_response: any;
+    captions: {
+        baseUrl: string;
+        name: {
+            simpleText: string;
+        };
+        vssId: string;
+        languageCode: string;
+        kind: string;
+        isTranslatable: boolean;
+    };
 }
 
 export interface VideoDetails {

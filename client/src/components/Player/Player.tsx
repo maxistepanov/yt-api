@@ -38,6 +38,8 @@ import {
     selectTrackStore,
     thumbnailSelector,
 } from '../../features/track/trackSelectors';
+import { AlbumArt } from '../AlbumArt';
+import { Captions } from '../Captions';
 
 interface VideoProps {
     data?: videoInfo;
@@ -65,35 +67,38 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     const track = useSelector(selectTrackStore);
     const playlist = useSelector(selectPlaylist);
 
-    useEffect(() => {
-        if (
-            audio &&
-            track &&
-            Array.isArray(track.formats) &&
-            track.formats.length
-        ) {
-            const hasVideo = (format: any) => !!format.qualityLabel;
-            const hasAudio = (format: any) => !!format.audioBitrate;
+    useEffect(
+        () => {
+            if (
+                audio &&
+                track &&
+                Array.isArray(track.formats) &&
+                track.formats.length
+            ) {
+                const hasVideo = (format: any) => !!format.qualityLabel;
+                const hasAudio = (format: any) => !!format.audioBitrate;
 
-            const audioFormats = track.formats.filter((format: any) => {
-                return !hasVideo(format) && hasAudio(format);
-            });
+                const audioFormats = track.formats.filter((format: any) => {
+                    return !hasVideo(format) && hasAudio(format);
+                });
 
-            const [format] = audioFormats;
+                const [format] = audioFormats;
 
-            try {
-                if (format.url !== audio.src) {
-                    audio.src = format.url;
-                    audio.play();
-                    audio.playbackRate = audioService.speed;
+                try {
+                    if (format.url !== audio.src) {
+                        audio.src = format.url;
+                        audio.play();
+                        audio.playbackRate = audioService.speed;
+                    }
+                } catch (e) {
+                    console.log('err', e);
                 }
-            } catch (e) {
-                console.log('err', e);
+            } else {
+                console.warn('audio is empty');
             }
-        } else {
-            console.warn('audio is empty');
-        }
-    }, [track]);
+        },
+        [track],
+    );
 
     const { post, get }: useApiInstance = useApi();
 
@@ -169,7 +174,18 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 <div id="player">
                     <PageContainer>
                         <PosedRouter>
-                            <PlayerTrack track={track} path="/player" />
+                            <PlayerTrack track={track} path="/player">
+                                <AlbumArt
+                                    default={true}
+                                    path="podcast"
+                                    src={thumbnailSelector(track)}
+                                    isPaused={isPaused}
+                                />
+                                <Captions
+                                    path="captions"
+                                    value={track.captions}
+                                />
+                            </PlayerTrack>
                             <AddNewTrack path="/new" onSubmit={onNewTrack} />
                             <PlayList
                                 path="/playlist"

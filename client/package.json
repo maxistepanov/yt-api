@@ -8,6 +8,8 @@
     "axios": "^0.19.0",
     "classnames": "^2.2.6",
     "date-fns": "^2.8.1",
+    "fast-xml-parser": "^3.15.1",
+    "he": "^1.2.0",
     "imask": "^5.2.1",
     "lodash.throttle": "^4.1.1",
     "lottie-react-web": "^2.1.4",
@@ -29,6 +31,7 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.2.9",
+    "@types/he": "^1.1.0",
     "@types/lodash.throttle": "^4.1.6",
     "@types/node": "12.12.8",
     "@types/qs": "^6.9.0",

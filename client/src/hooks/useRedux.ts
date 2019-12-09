@@ -16,11 +16,14 @@ export function useRedux<T>(
     }
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    useEffect(() => {
-        if (persistence) {
-            localStorage.setItem(persistence, JSON.stringify(state));
-        }
-    }, [state]);
+    useEffect(
+        () => {
+            if (persistence) {
+                localStorage.setItem(persistence, JSON.stringify(state));
+            }
+        },
+        [state],
+    );
 
     return [state, dispatch];
 }

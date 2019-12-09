@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { format } from 'date-fns';
+import { Link, Router } from '@reach/router';
 
 // utils
 import { getTimeString, getValueInBetween } from '../../utils';
@@ -20,12 +21,17 @@ import { AlbumArt } from '../AlbumArt';
 
 // styles
 import { AlbumName, AlbumNameWrapper, Point, TimePicker } from './styles';
+import { Captions } from '../Captions';
 
 interface PlayerTrackProps extends RouterProps {
     track?: VideoState;
+    children?: any;
 }
 
-export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
+export const PlayerTrack: React.FC<PlayerTrackProps> = ({
+    track,
+    ...props
+}) => {
     const {
         audio,
         isPaused,
@@ -40,6 +46,8 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
     const [onTouch, setOnTouch] = useState<any>(null);
 
     const [video, setVideo] = useState<videoFormat>();
+
+    const [captions, setCaptions] = useState<any>();
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const seekAreaRef = useRef<HTMLDivElement>(null);
@@ -69,16 +77,31 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
         return () => window.removeEventListener('mouseup', fn);
     }, []);
 
-    useEffect(() => {
-        if (track && track.videoFormat) {
-            const video = track.videoFormat.find(
-                (format: videoFormat) => !!format.bitrate,
-            );
-            if (video) {
-                setVideo(video);
+    useEffect(
+        () => {
+            console.log('track', track);
+
+            if (track && track.videoFormat) {
+                const video = track.videoFormat.find(
+                    (format: videoFormat) => !!format.bitrate,
+                );
+                if (video) {
+                    setVideo(video);
+                }
             }
-        }
-    }, [track]);
+        },
+        [track],
+    );
+
+    // captions
+    useEffect(
+        () => {
+            if (track && track.captions) {
+                setCaptions(track.captions);
+            }
+        },
+        [track],
+    );
 
     const getProgressInPx = (progress: number) => {
         return (offsetWidth / 100) * progress;
@@ -172,23 +195,31 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({ track }) => {
 
     return (
         <div id="player-track" className="active">
-            <AlbumArt src={thumbnailSelector(track)} isPaused={isPaused} />
+            {props.children}
             <ModeContainer>
-                <ModeIcon className="fas fa-podcast" />
+                <Link to="podcast">
+                    <ModeIcon className="fas fa-podcast" />
+                </Link>
                 <ModeIcon className="fas fa-video" />
-                <ModeIcon className="fas fa-closed-captioning" />
+                <Link to="captions">
+                    <ModeIcon className="fas fa-closed-captioning" />
+                </Link>
             </ModeContainer>
             {track && (
                 <React.Fragment>
                     <AlbumNameWrapper>
                         <AlbumName>{track.title}</AlbumName>
                     </AlbumNameWrapper>
-                    {track.author && track.published && (
-                        <div id="track-name">
-                            {track.author.name} -{' '}
-                            {format(new Date(track.published), 'dd MMMM yyyy')}{' '}
-                        </div>
-                    )}
+                    {track.author &&
+                        track.published && (
+                            <div id="track-name">
+                                {track.author.name} -{' '}
+                                {format(
+                                    new Date(track.published),
+                                    'dd MMMM yyyy',
+                                )}{' '}
+                            </div>
+                        )}
                 </React.Fragment>
             )}
             <div id="track-time" className="active">

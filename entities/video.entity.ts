@@ -157,6 +157,20 @@ export class VideoEntity implements videoInfo {
 
     @Exclude() vss_host!: any;
 
+    @Expose({name: 'captions'})
+    getCaptions() {
+        try {
+            if (this.player_response && this.player_response.captions) {
+                const {captionTracks} = this.player_response.captions.playerCaptionsTracklistRenderer;
+                if (captionTracks && Array.isArray(captionTracks) && captionTracks.length) {
+                    return captionTracks[0];
+                }
+            }
+        } catch (e) {
+            return null
+        }
+    }
+
     @Expose({name: 'thumbnails'})
     getThumbnail() {
         const thumbs: any = [];

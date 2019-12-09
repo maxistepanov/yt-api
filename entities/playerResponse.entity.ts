@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import {Transform} from "stream";
 
 export class PlayerResponseEntity {
     @Exclude() playabilityStatus!: any;
@@ -28,4 +29,7 @@ export class PlayerResponseEntity {
     videoDetails!: any;
 
     @Exclude() adSafetyReason!: any;
+
+    captions!: any
+
 }
