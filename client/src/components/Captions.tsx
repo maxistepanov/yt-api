@@ -91,7 +91,7 @@ export const Captions: React.FC<CaptionsProps> = ({ value }) => {
         [xml],
     );
     return (
-        <ArtContainer>
+        <Container>
             <CaptionList ref={listRef}>
                 {currentList &&
                     currentList.map(({ attr, text = '' }: Caption) => {
@@ -102,11 +102,11 @@ export const Captions: React.FC<CaptionsProps> = ({ value }) => {
                         );
                     })}
             </CaptionList>
-        </ArtContainer>
+        </Container>
     );
 };
 
-const ArtContainer = styled.div`
+const Container = styled.div`
     width: 100%;
     display: flex;
     justify-content: center;
@@ -117,10 +117,6 @@ const ArtContainer = styled.div`
 const CaptionList = styled.div`
     overflow: auto;
     height: 100%;
-    width: 100%;
-    //display: flex;
-    //justify-content: flex-end;
-    //flex-direction: column;
 `;
 
 const textIn = keyframes`
