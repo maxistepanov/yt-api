@@ -201,9 +201,12 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({
                     <ModeIcon className="fas fa-podcast" />
                 </Link>
                 <ModeIcon className="fas fa-video" />
-                <Link to="captions">
-                    <ModeIcon className="fas fa-closed-captioning" />
-                </Link>
+                { track &&  track.captions && (
+                    <Link to="captions">
+                        <ModeIcon className="fas fa-closed-captioning" />
+                    </Link>
+                ) }
+
             </ModeContainer>
             {track && (
                 <React.Fragment>

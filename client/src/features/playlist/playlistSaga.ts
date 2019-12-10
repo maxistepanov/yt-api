@@ -3,7 +3,6 @@ import { put, takeEvery, all, call, select } from 'redux-saga/effects';
 import { playlistActions } from './playlistSlice';
 import ApiService from '../../services/ApiService';
 import { videoInfo } from 'ytdl-core';
-import { Simulate } from 'react-dom/test-utils';
 import { playlistSelector } from './playlistSelector';
 import { VideoState } from '../../interfaces';
 
