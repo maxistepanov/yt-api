@@ -14,7 +14,8 @@ import { BgArtwork } from '../BgArtwork';
 import { PlayerTrack } from '../PlayerTrack/PlayerTrack';
 import { AddNewTrack } from '../AddNewTrack/AddNewTrack';
 import { PlayList } from '../PlayList';
-
+import { AlbumArt } from '../AlbumArt';
+import { Captions } from '../Captions';
 // router
 import { PosedRouter } from '../PosedRouter';
 
@@ -30,7 +31,6 @@ import { VideoState } from '../../interfaces';
 // selectors
 import {
     playlistSelector,
-    selectPlaylist,
 } from '../../features/playlist/playlistSelector';
 import { trackActions } from 'features/track/trackSlice';
 import { playlistActions } from '../../features/playlist/playlistSlice';
@@ -38,8 +38,10 @@ import {
     selectTrackStore,
     thumbnailSelector,
 } from '../../features/track/trackSelectors';
-import { AlbumArt } from '../AlbumArt';
-import { Captions } from '../Captions';
+
+
+// utils
+import {setMediaSession} from 'features/playlist/mediaSession';
 
 interface VideoProps {
     data?: videoInfo;
@@ -85,10 +87,17 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 const [format] = audioFormats;
 
                 try {
-                    if (format.url !== audio.src && track.active) {
+                    if (format.url !== audio.src) {
                         audio.src = format.url;
-                        audio.play();
                         audio.playbackRate = audioService.speed;
+                        setMediaSession(track, {
+                            play: playPause
+                        })
+
+                        if (track.active) {
+                            audio.play();
+                        }
+
                     }
                 } catch (e) {
                     console.log('err', e);
