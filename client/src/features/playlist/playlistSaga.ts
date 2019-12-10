@@ -1,8 +1,11 @@
-import { put, takeEvery, all, call } from 'redux-saga/effects';
+import { put, takeEvery, all, call, select } from 'redux-saga/effects';
 
 import { playlistActions } from './playlistSlice';
 import ApiService from '../../services/ApiService';
 import { videoInfo } from 'ytdl-core';
+import { Simulate } from 'react-dom/test-utils';
+import { playlistSelector } from './playlistSelector';
+import { VideoState } from '../../interfaces';
 
 interface GetPlaylistResponse {
     id: number;
@@ -18,6 +21,8 @@ function* getPlaylistAsync() {
             ApiService.get,
             '/get-playlist',
         );
+        const playlist: VideoState[] = yield select(playlistSelector); // <-- get the project
+
         const data: any = result.map(
             ({ json, ...rest }: GetPlaylistResponse) => ({
                 saved: true,
@@ -26,7 +31,27 @@ function* getPlaylistAsync() {
             }),
         );
 
-        yield put(playlistActions.updateAll(data));
+        const notSavedItems = playlist.filter(
+            (item: VideoState) =>
+                !data.find((data: any) => data.video_id === item.video_id),
+        );
+
+        yield put(playlistActions.updateAll([...data, ...notSavedItems]));
+
+        if (notSavedItems && Array.isArray(notSavedItems)) {
+            for (const notSavedItem of notSavedItems) {
+                const res = yield call(ApiService.post, 'add-video', {
+                    video: notSavedItem,
+                });
+
+                yield put(
+                    playlistActions.updateOne({
+                        ...res,
+                        saved: true,
+                    }),
+                );
+            }
+        }
     } catch (e) {
         console.log('err');
     }

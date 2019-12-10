@@ -65,7 +65,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     const dispatch = useDispatch();
 
     const track = useSelector(selectTrackStore);
-    const playlist = useSelector(selectPlaylist);
+    const state = useSelector(state => state);
 
     useEffect(
         () => {
@@ -112,19 +112,19 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
             }),
         );
 
-        const res = await post('add-video', {
-            video: {
-                ...video,
-                createdAt: new Date(),
-            },
-        });
-
-        dispatch(
-            playlistActions.updateOne({
-                ...res,
-                saved: true,
-            }),
-        );
+        // const res = await post('add-video', {
+        //     video: {
+        //         ...video,
+        //         createdAt: new Date(),
+        //     },
+        // });
+        //
+        // dispatch(
+        //     playlistActions.updateOne({
+        //         ...res,
+        //         saved: true,
+        //     }),
+        // );
     };
 
     useEffect(() => {
@@ -155,7 +155,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     };
 
     const onStartPlay = () => {
-        const list = playlistSelector(playlist);
+        const list = playlistSelector(state);
         if (!track && Array.isArray(list) && list.length) {
             const [firstTrack] = list;
 
@@ -192,7 +192,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                             <AddNewTrack path="/new" onSubmit={onNewTrack} />
                             <PlayList
                                 path="/playlist"
-                                list={playlistSelector(playlist)}
+                                list={playlistSelector(state)}
                                 active={track}
                                 onSelect={onSelectTrack}
                                 onRemove={onRemove}

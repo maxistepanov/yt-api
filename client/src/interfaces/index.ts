@@ -27,6 +27,7 @@ export interface VideoState extends videoInfo {
     thumbnails: Thumbnail[];
     videoFormat: videoFormat[];
     player_response: any;
+    video_id: string;
     captions: {
         baseUrl: string;
         name: {

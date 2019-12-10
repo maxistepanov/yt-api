@@ -4,7 +4,7 @@ import { VideoState } from 'interfaces';
 export const selectPlaylist = (state: any) => state.playlist;
 
 export const playlistSelector = createSelector(
-    (state: any) => state,
+    selectPlaylist,
     (state: VideoState[]): VideoState[] => {
         return state.slice().sort((a: VideoState, b: VideoState) => {
             return new Date(a.createdAt) > new Date(b.createdAt) ? -1 : 1;
