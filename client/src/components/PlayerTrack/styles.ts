@@ -1,11 +1,17 @@
 import styled from 'styled-components';
 
-export const AlbumName = styled.div`
+interface AlbumNameProps {
+    time: number;
+    children?: any;
+}
+
+export const AlbumName = styled.div<AlbumNameProps>`
     color: #54576f;
     font-size: 17px;
     font-weight: bold;
-    animation: marquee 15s ease-in-out infinite;
+    animation: marquee ${props => props.time}ms ease-in-out infinite;
     white-space: nowrap;
+    width: max-content;
 `;
 
 export const AlbumNameWrapper = styled.div`

@@ -181,10 +181,13 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                     src={thumbnailSelector(track)}
                                     isPaused={isPaused}
                                 />
-                                <Captions
-                                    path="captions"
-                                    value={track.captions}
-                                />
+                                {track &&
+                                    track.captions && (
+                                        <Captions
+                                            path="captions"
+                                            value={track.captions}
+                                        />
+                                    )}
                             </PlayerTrack>
                             <AddNewTrack path="/new" onSubmit={onNewTrack} />
                             <PlayList

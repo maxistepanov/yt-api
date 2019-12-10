@@ -208,7 +208,9 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({
             {track && (
                 <React.Fragment>
                     <AlbumNameWrapper>
-                        <AlbumName>{track.title}</AlbumName>
+                        <AlbumName time={track.title.length * 100}>
+                            {track.title}
+                        </AlbumName>
                     </AlbumNameWrapper>
                     {track.author &&
                         track.published && (

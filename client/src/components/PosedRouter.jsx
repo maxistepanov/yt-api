@@ -4,17 +4,22 @@ import {Router, Location} from '@reach/router';
 
 import { RouteContainer } from './RouteContainer';
 
-export const PosedRouter = ({ children }) => (
-    <Location>
-        {({ location }) => {
-            return (
-                <PoseGroup>
-                    <RouteContainer key={location.pathname}>
-                        <Router location={location}>{children}</Router>
-                    </RouteContainer>
-                </PoseGroup>
-            )
-        }}
-    </Location>
-);
+export const PosedRouter = ({ children }) => {
+    return (
+        <Location>
+            {({ location }) => {
+                // animate only first level of routing
+                const [ _, path] = location.pathname.split('/');
+                return (
+                    <PoseGroup>
+                        <RouteContainer key={path}>
+                            <Router location={location}>{children}</Router>
+                        </RouteContainer>
+                    </PoseGroup>
+                )
+            }}
+        </Location>
+
+    )
+};
 

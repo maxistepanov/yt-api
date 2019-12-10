@@ -94,10 +94,10 @@ export const Captions: React.FC<CaptionsProps> = ({ value }) => {
         <ArtContainer>
             <CaptionList ref={listRef}>
                 {currentList &&
-                    currentList.map((caption: Caption) => {
+                    currentList.map(({ attr, text = '' }: Caption) => {
                         return (
-                            <Row key={caption.attr.att_start}>
-                                {caption.text.replace(new RegExp('&#39;', 'g'), "'")}
+                            <Row key={attr.att_start}>
+                                {text.replace(new RegExp('&#39;', 'g'), "'")}
                             </Row>
                         );
                     })}
@@ -123,6 +123,17 @@ const CaptionList = styled.div`
     //flex-direction: column;
 `;
 
+const textIn = keyframes`
+    0% {
+        opacity: 0;
+}
+    100% {
+        opacity: 1;
+}
+`;
+
 const Row = styled.div`
     margin: 8px 0;
+    font-size: 18px;
+    animation: ${textIn} 0.2s ease-in forwards;
 `;
