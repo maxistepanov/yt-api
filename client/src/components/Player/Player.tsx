@@ -85,7 +85,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 const [format] = audioFormats;
 
                 try {
-                    if (format.url !== audio.src) {
+                    if (format.url !== audio.src && track.active) {
                         audio.src = format.url;
                         audio.play();
                         audio.playbackRate = audioService.speed;
@@ -112,19 +112,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
             }),
         );
 
-        // const res = await post('add-video', {
-        //     video: {
-        //         ...video,
-        //         createdAt: new Date(),
-        //     },
-        // });
-        //
-        // dispatch(
-        //     playlistActions.updateOne({
-        //         ...res,
-        //         saved: true,
-        //     }),
-        // );
+
     };
 
     useEffect(() => {

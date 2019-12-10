@@ -97,7 +97,12 @@ export const Captions: React.FC<CaptionsProps> = ({ value }) => {
                     currentList.map(({ attr, text = '' }: Caption) => {
                         return (
                             <Row key={attr.att_start}>
-                                {text.replace(new RegExp('&#39;', 'g'), "'")}
+                                {text
+                                    .replace(new RegExp('&#39;', 'g'), "'")
+                                    .replace(new RegExp('&quot;', 'g'), '"')
+                                    .replace(new RegExp('&gt;', 'g'), '>')
+                                    .replace(new RegExp('&lt;', 'g'), '<')
+                                }
                             </Row>
                         );
                     })}

@@ -60,6 +60,12 @@ const BorderRadius = styled.div`
 
 const Title = styled.h3`
     color: #5a5858;
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 20;
+    background-color: #fff7f7;
+    padding: 0 15px!important;
 `;
 
 const Container = styled.div<ContainerProps>`
@@ -70,6 +76,7 @@ const Container = styled.div<ContainerProps>`
     transition: 0.3s ease transform, opacity;
     z-index: 1;
     overflow: auto;
+    position: relative;
     ${Title} {
         padding: ${props => (props.type === PlayListView.block ? '0 15px' : 0)};
     }

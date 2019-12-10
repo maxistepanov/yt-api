@@ -65,3 +65,11 @@ export interface LottieOptions {
     height?: number;
     width?: number;
 }
+
+export interface GetPlaylistResponse {
+    id: number;
+    name: string;
+    json: videoInfo;
+    createdAt: string;
+    updatedAt: string;
+}

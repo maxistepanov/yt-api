@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useEffect } from 'react';
+import React, {useContext, useRef, useEffect, HTMLAttributes} from 'react';
 import { VideoState } from '../interfaces';
 import styled from 'styled-components';
 import {
@@ -22,7 +22,7 @@ export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
 }) => {
     const itemRef = useRef<HTMLDivElement>(null);
     const { video_id, title } = video;
-    const { isPaused, progress }: AudioPlayerInstance = useContext(
+    const { isPaused, progress, audio }: AudioPlayerInstance = useContext(
         AudioContext,
     );
 
@@ -61,11 +61,7 @@ export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
                         <PlayingContainer>
                             <Playing height={100} isPaused={isPaused} />
                         </PlayingContainer>
-                        <Progress
-                            style={{
-                                width: progress + '%',
-                            }}
-                        />
+                        <Progress value={progress || 0}/>
                     </React.Fragment>
                 )}
         </PlayItem>
@@ -135,10 +131,15 @@ const PlayingContainer = styled.div`
     }
 `;
 
-const Progress = styled.div`
+interface ProgressProps extends HTMLAttributes<HTMLDivElement>{
+    value: number;
+};
+
+const Progress = styled.div<ProgressProps>`
     position: absolute;
     z-index: 10;
     height: 5px;
     background: red;
     bottom: 0;
+    width: ${props => +props.value}%
 `;

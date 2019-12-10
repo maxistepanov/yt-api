@@ -8,7 +8,10 @@ const trackSlice = createSlice({
     initialState: null,
     reducers: {
         set(state: any, action: PayloadAction<VideoState>): any {
-            return action.payload;
+            return {
+                ...action.payload,
+                active: true
+            };
         },
     },
     extraReducers: {},

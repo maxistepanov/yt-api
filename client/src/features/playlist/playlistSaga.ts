@@ -1,18 +1,16 @@
 import { put, takeEvery, all, call, select } from 'redux-saga/effects';
 
-import { playlistActions } from './playlistSlice';
+// services
 import ApiService from '../../services/ApiService';
-import { videoInfo } from 'ytdl-core';
-import { playlistSelector } from './playlistSelector';
-import { VideoState } from '../../interfaces';
 
-interface GetPlaylistResponse {
-    id: number;
-    name: string;
-    json: videoInfo;
-    createdAt: string;
-    updatedAt: string;
-}
+// actions
+import { playlistActions } from './playlistSlice';
+
+// selectors
+import { playlistSelector } from './playlistSelector';
+
+// interfaces
+import {GetPlaylistResponse, VideoState} from '../../interfaces';
 
 function* getPlaylistAsync() {
     try {
@@ -39,6 +37,7 @@ function* getPlaylistAsync() {
 
         if (notSavedItems && Array.isArray(notSavedItems)) {
             for (const notSavedItem of notSavedItems) {
+                // TODO: use existing saga call
                 const res = yield call(ApiService.post, 'add-video', {
                     video: notSavedItem,
                 });
@@ -56,6 +55,25 @@ function* getPlaylistAsync() {
     }
 }
 
+function* saveVideoToDb(action: any) {
+    try {
+        const res = yield call(ApiService.post, 'add-video', {
+            video: action.payload,
+        });
+
+        yield put(
+            playlistActions.updateOne({
+                ...res,
+                saved: true,
+            }),
+        );
+    } catch (e) {
+        console.log('saveVideoToDb error')
+    }
+
+}
+
 export const playlistSaga: any = all([
     takeEvery(playlistActions.getPlaylist, getPlaylistAsync),
+    takeEvery(playlistActions.add, saveVideoToDb),
 ]);
