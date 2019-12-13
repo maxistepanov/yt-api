@@ -5,13 +5,13 @@ const playlistSlice = createSlice({
     name: 'playlist',
     initialState: [] as VideoState[],
     reducers: {
-        add(state: any, action: PayloadAction<any>) {
+        add(state: VideoState[], action: PayloadAction<any>) {
             state.push({
                 ...action.payload,
                 createdAt: new Date(),
             });
         },
-        updateOne(state: any, action: PayloadAction<VideoState>) {
+        updateOne(state: VideoState[], action: PayloadAction<VideoState>) {
             let itemToUpdate = state.find(
                 (item: VideoState) => item.video_id === action.payload.video_id,
             );
@@ -20,10 +20,12 @@ const playlistSlice = createSlice({
                 itemToUpdate = action.payload;
             }
         },
-        updateAll(state: any, action: PayloadAction<any>) {
+        updateAll(state: VideoState[], action: PayloadAction<any>) {
             return action.payload;
         },
-        delete(state: any, action: PayloadAction<any>) {},
+        remove(state: VideoState[], action: PayloadAction<VideoState>) {
+            return state.filter( item => item.video_id !== action.payload.video_id )
+        },
         getPlaylist(state: any) {
             return state;
         },

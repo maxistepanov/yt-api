@@ -55,12 +55,29 @@ export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
             <Thumbnail src={thumbnailSelector(video)} />
             <Background />
             <PlayTitle> {title}</PlayTitle>
+            <div
+                className=""
+                style={{
+                    zIndex: 1000,
+                    position: 'absolute'
+                }}
+                onClick={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onRemove(video);
+                }}
+            >
+                <div className="button">
+                    <i className="fas fa-remove" />
+                </div>
+            </div>
             {track &&
                 track.video_id === video_id && (
                     <React.Fragment>
                         <PlayingContainer>
                             <Playing height={100} isPaused={isPaused} />
                         </PlayingContainer>
+
                         <Progress value={progress || 0}/>
                     </React.Fragment>
                 )}

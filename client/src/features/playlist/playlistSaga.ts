@@ -68,7 +68,17 @@ function* saveVideoToDb(action: any) {
             }),
         );
     } catch (e) {
-        console.log('saveVideoToDb error')
+        console.error('saveVideoToDb error')
+    }
+
+}
+
+function* removeFromDb(action: any) {
+    try {
+       yield call(ApiService.post, 'remove-video', action.payload);
+
+    } catch (e) {
+        console.error('removeFromDb')
     }
 
 }
@@ -76,4 +86,5 @@ function* saveVideoToDb(action: any) {
 export const playlistSaga: any = all([
     takeEvery(playlistActions.getPlaylist, getPlaylistAsync),
     takeEvery(playlistActions.add, saveVideoToDb),
+    takeEvery(playlistActions.remove, removeFromDb),
 ]);

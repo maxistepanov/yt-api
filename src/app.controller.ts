@@ -41,13 +41,20 @@ export class AppController {
     }
 
     @Post('add-video')
-    async addVideo(@Body() payload) {
+    async add(@Body() payload) {
         const video = new Video({
             name: payload.video.title,
             videoId: payload.video.video_id,
         });
 
         return this.playlistRepository.save(new Video(video));
+    }
+
+    @Post('remove-video')
+    async remove(@Body() payload) {
+        const video = await this.playlistRepository.findOne(payload.id)
+
+        return this.playlistRepository.remove(video);
     }
 
     @Get('get-playlist')

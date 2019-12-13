@@ -133,13 +133,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     };
 
     const onRemove = (video: VideoState) => {
-        dispatch({
-            type: 'update',
-            payload: {
-                ...video,
-                remove: true,
-            },
-        });
+        dispatch(playlistActions.remove(video));
         post('/remove-video', { id: video.id }).then();
     };
 
