@@ -3,7 +3,9 @@ import styled from 'styled-components';
 import { RouterProps, VideoState } from '../../interfaces';
 import { AudioContext, AudioPlayerInstance } from '../../contexts/AudioContext';
 import { useSelector } from 'react-redux';
-
+import posed from "react-pose";
+import { useSpring, animated, interpolate } from 'react-spring'
+import { useGesture } from 'react-with-gesture'
 // Components
 import { ViewListRow } from '../ViewListRow';
 import { ViewBlockRow } from '../ViewBlockRow';
@@ -44,6 +46,7 @@ export const Playlist: React.FC<PlayListProps> = ({
             });
         }
     };
+
     return (
         <BorderRadius>
             <Container type={type}>
@@ -52,6 +55,7 @@ export const Playlist: React.FC<PlayListProps> = ({
                         <NowPlying track={track} onClick={onClickByPlyingNow} />
                     )}
                 </Sticky>
+
                 <List>
                     {list.map((video: VideoState) => {
                         return (

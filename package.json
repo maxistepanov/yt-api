@@ -9,5 +9,9 @@
     "start": "lerna run start",
     "deploy": "lerna run deploy",
     "format": "lerna run format"
+  },
+  "dependencies": {
+    "react-spring": "^8.0.27",
+    "react-with-gesture": "^4.0.8"
   }
 }
