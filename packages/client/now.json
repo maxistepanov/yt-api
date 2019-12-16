@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "name": "yt-podcast-view",
+  "env": {
+    "REACT_APP_API_URL": "@react_app_api_url"
+  }
+}

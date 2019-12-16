@@ -6,6 +6,7 @@
   },
   "scripts": {
     "boot": "lerna bootstrap",
-    "start": "lerna run start"
+    "start": "lerna run start",
+    "deploy": "lerna run deploy"
   }
 }

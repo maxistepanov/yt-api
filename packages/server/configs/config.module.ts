@@ -15,9 +15,7 @@ import { TypeOrmConfigService } from './typeOrmConfig.service';
     providers: [
         {
             provide: ConfigService,
-            useValue: new ConfigService(
-                `${process.env.NODE_ENV || 'development'}.env`,
-            ),
+            useValue: new ConfigService(),
         },
     ],
     exports: [ConfigService, TypeOrmModule],
