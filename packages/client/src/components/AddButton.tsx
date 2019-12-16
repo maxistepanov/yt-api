@@ -15,7 +15,7 @@ export const AddButton: React.FC<AddButtonProps> = props => {
             <Lottie
                 options={{
                     animationData,
-                    autoplay: false
+                    autoplay: false,
                 }}
                 {...props}
             />

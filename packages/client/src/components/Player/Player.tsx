@@ -13,7 +13,7 @@ import './player.css';
 import { BgArtwork } from '../BgArtwork';
 import { PlayerTrack } from '../PlayerTrack/PlayerTrack';
 import { AddNewTrack } from '../AddNewTrack/AddNewTrack';
-import { PlayList } from '../PlayList';
+import { Playlist } from '../playlist/Playlist';
 import { AlbumArt } from '../AlbumArt';
 import { Captions } from '../Captions';
 // router
@@ -29,9 +29,7 @@ import { useApi, useApiInstance } from '../../hooks/useApi';
 import { VideoState } from '../../interfaces';
 
 // selectors
-import {
-    playlistSelector,
-} from '../../features/playlist/playlistSelector';
+import { playlistSelector } from '../../features/playlist/playlistSelector';
 import { trackActions } from 'features/track/trackSlice';
 import { playlistActions } from '../../features/playlist/playlistSlice';
 import {
@@ -39,9 +37,8 @@ import {
     thumbnailSelector,
 } from '../../features/track/trackSelectors';
 
-
 // utils
-import {setMediaSession} from 'features/playlist/mediaSession';
+import { setMediaSession } from 'features/playlist/mediaSession';
 
 interface VideoProps {
     data?: videoInfo;
@@ -91,13 +88,12 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                         audio.src = format.url;
                         audio.playbackRate = audioService.speed;
                         setMediaSession(track, {
-                            play: playPause
-                        })
+                            play: playPause,
+                        });
 
                         if (track.active) {
                             audio.play();
                         }
-
                     }
                 } catch (e) {
                     console.log('err', e);
@@ -120,8 +116,6 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 saved: false,
             }),
         );
-
-
     };
 
     useEffect(() => {
@@ -181,7 +175,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                     )}
                             </PlayerTrack>
                             <AddNewTrack path="/new" onSubmit={onNewTrack} />
-                            <PlayList
+                            <Playlist
                                 path="/playlist"
                                 list={playlistSelector(state)}
                                 active={track}

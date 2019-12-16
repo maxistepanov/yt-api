@@ -15,18 +15,17 @@ export const BgArtwork: React.FC<BgArtworkProps> = ({ src }) => {
     return (
         <React.Fragment>
             <div id="bg-layer" />
-            { !src && (
-                <Lottie
-                    options={{
-                        animationData,
-                        autoplay: true
-                    }}
-                />
-            ) }
-            { src && (
-                <Artwork id="bg-artwork" image={src || defaultImage} />
-
-            ) }
+            {src && (
+                <Wrapper>
+                    <Lottie
+                        options={{
+                            animationData,
+                            autoplay: true,
+                        }}
+                    />
+                </Wrapper>
+            )}
+            {/*{src && <Artwork id="bg-artwork" image={src || defaultImage} />}*/}
         </React.Fragment>
     );
 };
@@ -41,4 +40,9 @@ const Artwork = styled.img<ArtworkProps>`
     width: 100vw;
     object-fit: cover;
     transition: background-image 0.4s ease-in-out;
+`;
+
+const Wrapper = styled.div`
+    position: absolute;
+    left: 0;
 `;

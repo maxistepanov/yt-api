@@ -10,7 +10,7 @@ import { playlistActions } from './playlistSlice';
 import { playlistSelector } from './playlistSelector';
 
 // interfaces
-import {GetPlaylistResponse, VideoState} from '../../interfaces';
+import { GetPlaylistResponse, VideoState } from '../../interfaces';
 
 function* getPlaylistAsync() {
     try {
@@ -68,19 +68,16 @@ function* saveVideoToDb(action: any) {
             }),
         );
     } catch (e) {
-        console.error('saveVideoToDb error')
+        console.error('saveVideoToDb error');
     }
-
 }
 
 function* removeFromDb(action: any) {
     try {
-       yield call(ApiService.post, 'remove-video', action.payload);
-
+        yield call(ApiService.post, 'remove-video', action.payload);
     } catch (e) {
-        console.error('removeFromDb')
+        console.error('removeFromDb');
     }
-
 }
 
 export const playlistSaga: any = all([

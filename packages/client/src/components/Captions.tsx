@@ -101,8 +101,7 @@ export const Captions: React.FC<CaptionsProps> = ({ value }) => {
                                     .replace(new RegExp('&#39;', 'g'), "'")
                                     .replace(new RegExp('&quot;', 'g'), '"')
                                     .replace(new RegExp('&gt;', 'g'), '>')
-                                    .replace(new RegExp('&lt;', 'g'), '<')
-                                }
+                                    .replace(new RegExp('&lt;', 'g'), '<')}
                             </Row>
                         );
                     })}

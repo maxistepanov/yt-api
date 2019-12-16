@@ -24,7 +24,9 @@ const playlistSlice = createSlice({
             return action.payload;
         },
         remove(state: VideoState[], action: PayloadAction<VideoState>) {
-            return state.filter( item => item.video_id !== action.payload.video_id )
+            return state.filter(
+                item => item.video_id !== action.payload.video_id,
+            );
         },
         getPlaylist(state: any) {
             return state;

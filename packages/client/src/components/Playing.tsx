@@ -10,7 +10,7 @@ export const Playing: React.FC<LottieOptions> = props => {
         <Lottie
             options={{
                 animationData,
-                autoplay: false
+                autoplay: false,
             }}
             {...props}
         />

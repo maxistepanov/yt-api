@@ -52,7 +52,7 @@ export class AppController {
 
     @Post('remove-video')
     async remove(@Body() payload) {
-        const video = await this.playlistRepository.findOne(payload.id)
+        const video = await this.playlistRepository.findOne(payload.id);
 
         return this.playlistRepository.remove(video);
     }

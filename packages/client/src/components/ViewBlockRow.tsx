@@ -1,4 +1,4 @@
-import React, {useContext, useRef, useEffect, HTMLAttributes} from 'react';
+import React, { useContext, useRef, useEffect, HTMLAttributes } from 'react';
 import { VideoState } from '../interfaces';
 import styled from 'styled-components';
 import {
@@ -13,14 +13,15 @@ interface ViewBlockRowProps {
     onSelect: any;
     onRemove: any;
     video: VideoState;
+    refs: any;
 }
 
 export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
     onSelect,
     video,
     onRemove,
+    refs,
 }) => {
-    const itemRef = useRef<HTMLDivElement>(null);
     const { video_id, title } = video;
     const { isPaused, progress, audio }: AudioPlayerInstance = useContext(
         AudioContext,
@@ -28,30 +29,16 @@ export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
 
     const track: VideoState = useSelector(selectTrackStore);
 
-    useEffect(
-        () => {
-            if (
-                itemRef &&
-                itemRef.current &&
-                track &&
-                track.video_id === video_id
-            ) {
-                const scrollIntoView = (ref: HTMLDivElement | null) => {
-                    if (ref) {
-                        ref.scrollIntoView({
-                            behavior: 'smooth',
-                        });
-                    }
-                };
-
-                setTimeout(() => scrollIntoView(itemRef.current), 300);
-            }
-        },
-        [itemRef.current, track, video_id],
-    );
-
     return (
-        <PlayItem key={video_id} onClick={() => onSelect(video)} ref={itemRef}>
+        <PlayItem
+            key={video_id}
+            onClick={() => onSelect(video)}
+            ref={ref => {
+                if (ref) {
+                    refs[video_id] = ref;
+                }
+            }}
+        >
             <Thumbnail src={thumbnailSelector(video)} />
             <Background />
             <PlayTitle> {title}</PlayTitle>
@@ -59,7 +46,7 @@ export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
                 className=""
                 style={{
                     zIndex: 1000,
-                    position: 'absolute'
+                    position: 'absolute',
                 }}
                 onClick={e => {
                     e.preventDefault();
@@ -78,7 +65,7 @@ export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
                             <Playing height={100} isPaused={isPaused} />
                         </PlayingContainer>
 
-                        <Progress value={progress || 0}/>
+                        <Progress value={progress || 0} />
                     </React.Fragment>
                 )}
         </PlayItem>
@@ -148,9 +135,9 @@ const PlayingContainer = styled.div`
     }
 `;
 
-interface ProgressProps extends HTMLAttributes<HTMLDivElement>{
+interface ProgressProps extends HTMLAttributes<HTMLDivElement> {
     value: number;
-};
+}
 
 const Progress = styled.div<ProgressProps>`
     position: absolute;
@@ -158,5 +145,5 @@ const Progress = styled.div<ProgressProps>`
     height: 5px;
     background: red;
     bottom: 0;
-    width: ${props => +props.value}%
+    width: ${props => +props.value}%;
 `;
