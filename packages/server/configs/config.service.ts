@@ -5,11 +5,15 @@ export class ConfigService {
     private readonly env: { [key: string]: string };
 
     constructor(filePath: string) {
-        this.env = dotenv.parse(fs.readFileSync(filePath));
+        try {
+            this.env = dotenv.parse(fs.readFileSync(filePath));
 
-        Object.entries(this.env).forEach(([key, value]) => {
-            process.env[key] = value;
-        });
+            Object.entries(this.env).forEach(([key, value]) => {
+                process.env[key] = value;
+            });
+        } catch (e) {
+            console.log('file env not found')
+        }
     }
 
     get(key: string): string {
