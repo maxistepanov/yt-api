@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import posed from 'react-pose';
+import posed, { PoseGroup } from 'react-pose';
+import { Scroll } from 'framer';
 
 // Components
 import { ViewListRow } from '../ViewListRow';
@@ -15,6 +15,10 @@ import { RouterProps, VideoState } from '../../interfaces';
 
 // hooks
 import { useToggle } from '../../hooks/useToggle';
+
+// Demo swipe
+import { PosedSwipe } from '../PosedSwipe';
+import styled from 'styled-components';
 
 interface PlayListProps extends RouterProps {
     list: VideoState[];
@@ -31,6 +35,10 @@ enum PlayListView {
 const Item = posed.div({
     open: { y: 0, opacity: 1 },
     closed: { y: 20, opacity: 0 },
+    exit: {
+        opacity: 0,
+        transition: { duration: 150 },
+    },
 });
 
 export const Playlist: React.FC<PlayListProps> = ({
@@ -40,7 +48,6 @@ export const Playlist: React.FC<PlayListProps> = ({
 }) => {
     const refs: any = {};
     const track: VideoState = useSelector(selectTrackStore);
-
     const [type, setType] = useState(PlayListView.block);
 
     const [isOpen] = useToggle(false, 100, true);
@@ -62,18 +69,27 @@ export const Playlist: React.FC<PlayListProps> = ({
         <BorderRadius>
             <Container type={type}>
                 <List pose={isOpen ? 'open' : 'closed'}>
-                    {list.map((video: VideoState) => {
-                        return (
-                            <Item key={video.video_id}>
-                                <Row
-                                    refs={refs}
-                                    onSelect={onSelect}
-                                    onRemove={onRemove}
-                                    video={video}
-                                />
-                            </Item>
-                        );
-                    })}
+                    <PoseGroup>
+                        {list.map((video: VideoState) => {
+                            return (
+                                <Item key={video.video_id}>
+                                    <PosedSwipe
+                                        key={video.video_id}
+                                        onSwipeLeft={() => onRemove(video)}
+                                        onClick={() => onSelect(video)}
+                                    >
+                                        <Row
+                                            refs={refs}
+                                            onSelect={onSelect}
+                                            video={video}
+                                            onRemove={onRemove}
+                                            active={track}
+                                        />
+                                    </PosedSwipe>
+                                </Item>
+                            );
+                        })}
+                    </PoseGroup>
                 </List>
                 {track && (
                     <MemoizedNowPlying
@@ -130,4 +146,5 @@ const List = styled(
 )`
     display: flex;
     flex-direction: column;
+    overflow: scroll;
 `;

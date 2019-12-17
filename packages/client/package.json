@@ -9,6 +9,8 @@
     "classnames": "^2.2.6",
     "date-fns": "^2.8.1",
     "fast-xml-parser": "^3.15.1",
+    "framer": "^1.1.6",
+    "framer-motion": "^1.7.0",
     "he": "^1.2.0",
     "imask": "^5.2.1",
     "lodash.throttle": "^4.1.1",

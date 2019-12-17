@@ -29,15 +29,13 @@ export const BackgroundGradient = () => {
                     ease: easing.linear,
                 }).start((v: any) => {
                     if (element) {
-
                         requestAnimationFrame(() => {
                             element.style.background = `linear-gradient(${
                                 v.deg
-                                }deg, ${v.bg1} ${v.position1}%, ${v.bg2} ${
+                            }deg, ${v.bg1} ${v.position1}%, ${v.bg2} ${
                                 v.position2
-                                }%)`;
-
-                        })
+                            }%)`;
+                        });
                     }
                 });
             }

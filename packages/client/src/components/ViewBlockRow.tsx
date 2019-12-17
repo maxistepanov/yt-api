@@ -1,15 +1,11 @@
-import React, { useContext, useRef, useEffect, HTMLAttributes } from 'react';
+import React, { useContext, HTMLAttributes } from 'react';
 import { VideoState } from '../interfaces';
 import styled from 'styled-components';
 import {
-    selectTrackStore,
     thumbnailSelector,
 } from '../features/track/trackSelectors';
 import { Playing } from './Playing';
-import { useSelector } from 'react-redux';
 import { AudioContext, AudioPlayerInstance } from '../contexts/AudioContext';
-import { useSpring, animated, interpolate } from 'react-spring';
-import { useGesture } from 'react-with-gesture';
 
 //
 import './styles.css';
@@ -19,82 +15,38 @@ interface ViewBlockRowProps {
     onRemove: any;
     video: VideoState;
     refs: any;
+    active: VideoState;
 }
 
 export const ViewBlockRow: React.FC<ViewBlockRowProps> = React.memo(
-    ({ onSelect, video, onRemove, refs }) => {
+    ({ onSelect, video, onRemove, refs, active }) => {
         const { video_id, title } = video;
         const { isPaused, progress, audio }: AudioPlayerInstance = useContext(
             AudioContext,
         );
 
-        const track: VideoState = useSelector(selectTrackStore);
-
-        const [bind, { delta, down }] = useGesture();
-
-        const { x, bg, size } = useSpring<any>({
-            x: down ? delta[0] : 0,
-            bg: `linear-gradient(120deg, ${
-                delta[0] < 0 ? '#f093fb 0%, #f5576c' : '#96fbc4 0%, #f9f586'
-            } 100%)`,
-            size: down ? 1.1 : 1,
-            immediate: (name: string) => down && name === 'x',
-        });
-        const avSize = x.interpolate({
-            map: Math.abs,
-            range: [50, 300],
-            output: ['scale(0.5)', 'scale(1)'],
-            extrapolate: 'clamp',
-        });
-
         return (
-            <animated.div
-                {...bind()}
-                className="item"
-                style={{ background: bg }}
+            <PlayItem
+                key={video_id}
+                ref={ref => {
+                    ref && (refs[video_id] = ref);
+                }}
                 onClick={() => onSelect(video)}
             >
-                <animated.div
-                    className="av"
-                    style={{
-                        transform: avSize,
-                        justifySelf: delta[0] < 0 ? 'end' : 'start',
-                    }}
-                />
-                <animated.div
-                    className="fg"
-                    style={{
-                        transform: interpolate(
-                            [x, size],
-                            (x, s) => `translate3d(${x}px,0,0) scale(${s})`,
-                        ),
-                    }}
-                >
-                    <PlayItem
-                        key={video_id}
-                        ref={ref => {
-                            ref && (refs[video_id] = ref);
-                        }}
-                    >
-                        <Thumbnail src={thumbnailSelector(video)} />
-                        <Background />
-                        <PlayTitle> {title}</PlayTitle>
-                        {track &&
-                            track.video_id === video_id && (
-                                <React.Fragment>
-                                    <PlayingContainer>
-                                        <Playing
-                                            height={100}
-                                            isPaused={isPaused}
-                                        />
-                                    </PlayingContainer>
+                <Thumbnail src={thumbnailSelector(video)} />
+                <Background />
+                <PlayTitle> {title}</PlayTitle>
+                {active &&
+                    active.video_id === video_id && (
+                        <React.Fragment>
+                            <PlayingContainer>
+                                <Playing height={100} isPaused={isPaused} />
+                            </PlayingContainer>
 
-                                    <Progress value={progress || 0} />
-                                </React.Fragment>
-                            )}
-                    </PlayItem>
-                </animated.div>
-            </animated.div>
+                            <Progress value={progress || 0} />
+                        </React.Fragment>
+                    )}
+            </PlayItem>
         );
     },
 );
