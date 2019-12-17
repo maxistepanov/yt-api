@@ -1,8 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import Lottie from 'lottie-react-web';
-
-import animationData from 'images/lottie/11163-gradients-background.json';
 
 interface BgArtworkProps {
     src?: string;
@@ -15,17 +12,7 @@ export const BgArtwork: React.FC<BgArtworkProps> = ({ src }) => {
     return (
         <React.Fragment>
             <div id="bg-layer" />
-            {src && (
-                <Wrapper>
-                    <Lottie
-                        options={{
-                            animationData,
-                            autoplay: true,
-                        }}
-                    />
-                </Wrapper>
-            )}
-            {/*{src && <Artwork id="bg-artwork" image={src || defaultImage} />}*/}
+            {src && <Artwork id="bg-artwork" image={src || defaultImage} />}
         </React.Fragment>
     );
 };

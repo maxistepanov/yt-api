@@ -1,22 +1,32 @@
 import React, { HTMLAttributes, useContext } from 'react';
 import styled from 'styled-components';
+import ReactDOM from 'react-dom';
 
+// components
+import { Playing } from './Playing';
+
+// interfaces
 import { VideoState } from '../interfaces';
 import { thumbnailSelector } from '../features/track/trackSelectors';
-import { Playing } from './Playing';
 import { AudioContext, AudioPlayerInstance } from '../contexts/AudioContext';
 
-interface NowPlaingProps {
+interface NowPlyingProps {
     track: VideoState;
     onClick: any;
 }
 
-export const NowPlying: React.FC<NowPlaingProps> = ({ track, onClick }) => {
+export const NowPlying: React.FC<NowPlyingProps> = ({ track, onClick }) => {
     const { isPaused, progress, audio }: AudioPlayerInstance = useContext(
         AudioContext,
     );
 
-    return (
+    const controllerRef = document.querySelector('#player-content');
+
+    if (!controllerRef) {
+        return null;
+    }
+
+    return ReactDOM.createPortal(
         <Wrapper onClick={onClick}>
             <Image src={thumbnailSelector(track)} />
             <Title>{track.title}</Title>
@@ -24,14 +34,20 @@ export const NowPlying: React.FC<NowPlaingProps> = ({ track, onClick }) => {
                 <Playing height={50} isPaused={isPaused} />
             </PlayingContainer>
             <Progress value={progress || 0} />
-        </Wrapper>
+        </Wrapper>,
+        controllerRef,
     );
 };
 
 const Wrapper = styled.div`
     height: 60px;
-    width: 100%;
+    width: 95%;
+    left: 2.5%;
     display: flex;
+    position: absolute;
+    top: 0;
+    transform: translateY(-100%);
+    background-color: #fff7f7;
 `;
 
 const Image = styled.img`

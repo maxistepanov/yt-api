@@ -1,11 +1,7 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
-import { RouterProps, VideoState } from '../../interfaces';
-import { AudioContext, AudioPlayerInstance } from '../../contexts/AudioContext';
 import { useSelector } from 'react-redux';
-import posed from "react-pose";
-import { useSpring, animated, interpolate } from 'react-spring'
-import { useGesture } from 'react-with-gesture'
+
 // Components
 import { ViewListRow } from '../ViewListRow';
 import { ViewBlockRow } from '../ViewBlockRow';
@@ -13,6 +9,9 @@ import { NowPlying } from '../NowPlying';
 
 // selectors
 import { selectTrackStore } from '../../features/track/trackSelectors';
+
+import { RouterProps, VideoState } from '../../interfaces';
+import { AudioContext, AudioPlayerInstance } from '../../contexts/AudioContext';
 
 interface PlayListProps extends RouterProps {
     list: VideoState[];
@@ -50,12 +49,6 @@ export const Playlist: React.FC<PlayListProps> = ({
     return (
         <BorderRadius>
             <Container type={type}>
-                <Sticky>
-                    {track && (
-                        <NowPlying track={track} onClick={onClickByPlyingNow} />
-                    )}
-                </Sticky>
-
                 <List>
                     {list.map((video: VideoState) => {
                         return (
@@ -69,6 +62,9 @@ export const Playlist: React.FC<PlayListProps> = ({
                         );
                     })}
                 </List>
+                {track && (
+                    <NowPlying track={track} onClick={onClickByPlyingNow} />
+                )}
             </Container>
         </BorderRadius>
     );
@@ -80,13 +76,6 @@ interface ContainerProps {
 
 const BorderRadius = styled.div`
     border-radius: 15px;
-`;
-
-const Sticky = styled.div`
-    position: sticky;
-    top: 0;
-    z-index: 1001;
-    background-color: #fff7f7;
 `;
 
 const Title = styled.h3`

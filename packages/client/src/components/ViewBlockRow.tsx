@@ -8,9 +8,11 @@ import {
 import { Playing } from './Playing';
 import { useSelector } from 'react-redux';
 import { AudioContext, AudioPlayerInstance } from '../contexts/AudioContext';
-import { useSpring, animated, interpolate } from 'react-spring'
-import { useGesture } from 'react-with-gesture'
-import './styles.css'
+import { useSpring, animated, interpolate } from 'react-spring';
+import { useGesture } from 'react-with-gesture';
+
+//
+import './styles.css';
 
 interface ViewBlockRowProps {
     onSelect: any;
@@ -36,25 +38,44 @@ export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
 
     const { x, bg, size } = useSpring<any>({
         x: down ? delta[0] : 0,
-        bg: `linear-gradient(120deg, ${delta[0] < 0 ? '#f093fb 0%, #f5576c' : '#96fbc4 0%, #f9f586'} 100%)`,
+        bg: `linear-gradient(120deg, ${
+            delta[0] < 0 ? '#f093fb 0%, #f5576c' : '#96fbc4 0%, #f9f586'
+        } 100%)`,
         size: down ? 1.1 : 1,
-        immediate: (name: string) => down && name === 'x'
-    })
-    const avSize = x.interpolate({ map: Math.abs, range: [50, 300], output: ['scale(0.5)', 'scale(1)'], extrapolate: 'clamp' })
+        immediate: (name: string) => down && name === 'x',
+    });
+    const avSize = x.interpolate({
+        map: Math.abs,
+        range: [50, 300],
+        output: ['scale(0.5)', 'scale(1)'],
+        extrapolate: 'clamp',
+    });
 
     return (
-        <animated.div {...bind()} className="item" style={{background: bg}}       onClick={() => onSelect(video)}>
+        <animated.div
+            {...bind()}
+            className="item"
+            style={{ background: bg }}
+            onClick={() => onSelect(video)}
+        >
             <animated.div
                 className="av"
-                style={{transform: avSize, justifySelf: delta[0] < 0 ? 'end' : 'start'}}
+                style={{
+                    transform: avSize,
+                    justifySelf: delta[0] < 0 ? 'end' : 'start',
+                }}
             />
             <animated.div
                 className="fg"
-                style={{transform: interpolate([x, size], (x, s) => `translate3d(${x}px,0,0) scale(${s})`)}}
+                style={{
+                    transform: interpolate(
+                        [x, size],
+                        (x, s) => `translate3d(${x}px,0,0) scale(${s})`,
+                    ),
+                }}
             >
                 <PlayItem
                     key={video_id}
-
                     ref={ref => {
                         if (ref) {
                             refs[video_id] = ref;
@@ -81,20 +102,19 @@ export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
                         </div>
                     </div>
                     {track &&
-                    track.video_id === video_id && (
-                        <React.Fragment>
-                            <PlayingContainer>
-                                <Playing height={100} isPaused={isPaused} />
-                            </PlayingContainer>
+                        track.video_id === video_id && (
+                            <React.Fragment>
+                                <PlayingContainer>
+                                    <Playing height={100} isPaused={isPaused} />
+                                </PlayingContainer>
 
-                            <Progress value={progress || 0} />
-                        </React.Fragment>
-                    )}
+                                <Progress value={progress || 0} />
+                            </React.Fragment>
+                        )}
                 </PlayItem>
             </animated.div>
         </animated.div>
     );
-
 };
 
 const PlayItem = styled.div`
