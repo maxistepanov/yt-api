@@ -1,6 +1,4 @@
-import React, {
-    HTMLAttributes,
-} from 'react';
+import React, { HTMLAttributes } from 'react';
 import styled from 'styled-components';
 import ReactDOM from 'react-dom';
 import posed, { PoseGroup } from 'react-pose';

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { BackgroundGradient } from './backgroundGradient/BackgroundGradient';
 
 interface BgArtworkProps {
     src?: string;
@@ -12,7 +13,8 @@ export const BgArtwork: React.FC<BgArtworkProps> = ({ src }) => {
     return (
         <React.Fragment>
             <div id="bg-layer" />
-            {src && <Artwork id="bg-artwork" image={src || defaultImage} />}
+            <BackgroundGradient />
+            {/*{src && <Artwork id="bg-artwork" image={src || defaultImage} />}*/}
         </React.Fragment>
     );
 };

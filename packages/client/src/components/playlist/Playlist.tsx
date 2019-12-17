@@ -1,7 +1,4 @@
-import React, {
-    useState,
-    useCallback,
-} from 'react';
+import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import posed from 'react-pose';
