@@ -90,7 +90,7 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
             setCurrent(getTimeString(currentTime));
             setTotal(getTimeString(duration));
         };
-        const throttleUpdate = throttle(timeUpdate, 500);
+        const throttleUpdate = throttle(timeUpdate, 1000);
         audio.addEventListener('timeupdate', throttleUpdate);
 
         return () => audio.removeEventListener('timeupdate', throttleUpdate);

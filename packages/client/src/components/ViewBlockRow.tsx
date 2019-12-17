@@ -21,101 +21,83 @@ interface ViewBlockRowProps {
     refs: any;
 }
 
-export const ViewBlockRow: React.FC<ViewBlockRowProps> = ({
-    onSelect,
-    video,
-    onRemove,
-    refs,
-}) => {
-    const { video_id, title } = video;
-    const { isPaused, progress, audio }: AudioPlayerInstance = useContext(
-        AudioContext,
-    );
+export const ViewBlockRow: React.FC<ViewBlockRowProps> = React.memo(
+    ({ onSelect, video, onRemove, refs }) => {
+        const { video_id, title } = video;
+        const { isPaused, progress, audio }: AudioPlayerInstance = useContext(
+            AudioContext,
+        );
 
-    const track: VideoState = useSelector(selectTrackStore);
+        const track: VideoState = useSelector(selectTrackStore);
 
-    const [bind, { delta, down }] = useGesture();
+        const [bind, { delta, down }] = useGesture();
 
-    const { x, bg, size } = useSpring<any>({
-        x: down ? delta[0] : 0,
-        bg: `linear-gradient(120deg, ${
-            delta[0] < 0 ? '#f093fb 0%, #f5576c' : '#96fbc4 0%, #f9f586'
-        } 100%)`,
-        size: down ? 1.1 : 1,
-        immediate: (name: string) => down && name === 'x',
-    });
-    const avSize = x.interpolate({
-        map: Math.abs,
-        range: [50, 300],
-        output: ['scale(0.5)', 'scale(1)'],
-        extrapolate: 'clamp',
-    });
+        const { x, bg, size } = useSpring<any>({
+            x: down ? delta[0] : 0,
+            bg: `linear-gradient(120deg, ${
+                delta[0] < 0 ? '#f093fb 0%, #f5576c' : '#96fbc4 0%, #f9f586'
+            } 100%)`,
+            size: down ? 1.1 : 1,
+            immediate: (name: string) => down && name === 'x',
+        });
+        const avSize = x.interpolate({
+            map: Math.abs,
+            range: [50, 300],
+            output: ['scale(0.5)', 'scale(1)'],
+            extrapolate: 'clamp',
+        });
 
-    return (
-        <animated.div
-            {...bind()}
-            className="item"
-            style={{ background: bg }}
-            onClick={() => onSelect(video)}
-        >
+        return (
             <animated.div
-                className="av"
-                style={{
-                    transform: avSize,
-                    justifySelf: delta[0] < 0 ? 'end' : 'start',
-                }}
-            />
-            <animated.div
-                className="fg"
-                style={{
-                    transform: interpolate(
-                        [x, size],
-                        (x, s) => `translate3d(${x}px,0,0) scale(${s})`,
-                    ),
-                }}
+                {...bind()}
+                className="item"
+                style={{ background: bg }}
+                onClick={() => onSelect(video)}
             >
-                <PlayItem
-                    key={video_id}
-                    ref={ref => {
-                        if (ref) {
-                            refs[video_id] = ref;
-                        }
+                <animated.div
+                    className="av"
+                    style={{
+                        transform: avSize,
+                        justifySelf: delta[0] < 0 ? 'end' : 'start',
+                    }}
+                />
+                <animated.div
+                    className="fg"
+                    style={{
+                        transform: interpolate(
+                            [x, size],
+                            (x, s) => `translate3d(${x}px,0,0) scale(${s})`,
+                        ),
                     }}
                 >
-                    <Thumbnail src={thumbnailSelector(video)} />
-                    <Background />
-                    <PlayTitle> {title}</PlayTitle>
-                    <div
-                        className=""
-                        style={{
-                            zIndex: 1000,
-                            position: 'absolute',
-                        }}
-                        onClick={e => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onRemove(video);
+                    <PlayItem
+                        key={video_id}
+                        ref={ref => {
+                            ref && (refs[video_id] = ref);
                         }}
                     >
-                        <div className="button">
-                            <i className="fas fa-remove" />
-                        </div>
-                    </div>
-                    {track &&
-                        track.video_id === video_id && (
-                            <React.Fragment>
-                                <PlayingContainer>
-                                    <Playing height={100} isPaused={isPaused} />
-                                </PlayingContainer>
+                        <Thumbnail src={thumbnailSelector(video)} />
+                        <Background />
+                        <PlayTitle> {title}</PlayTitle>
+                        {track &&
+                            track.video_id === video_id && (
+                                <React.Fragment>
+                                    <PlayingContainer>
+                                        <Playing
+                                            height={100}
+                                            isPaused={isPaused}
+                                        />
+                                    </PlayingContainer>
 
-                                <Progress value={progress || 0} />
-                            </React.Fragment>
-                        )}
-                </PlayItem>
+                                    <Progress value={progress || 0} />
+                                </React.Fragment>
+                            )}
+                    </PlayItem>
+                </animated.div>
             </animated.div>
-        </animated.div>
-    );
-};
+        );
+    },
+);
 
 const PlayItem = styled.div`
     position: relative;

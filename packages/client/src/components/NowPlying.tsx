@@ -1,6 +1,9 @@
-import React, { HTMLAttributes, useContext } from 'react';
+import React, {
+    HTMLAttributes,
+} from 'react';
 import styled from 'styled-components';
 import ReactDOM from 'react-dom';
+import posed, { PoseGroup } from 'react-pose';
 
 // components
 import { Playing } from './Playing';
@@ -8,50 +11,80 @@ import { Playing } from './Playing';
 // interfaces
 import { VideoState } from '../interfaces';
 import { thumbnailSelector } from '../features/track/trackSelectors';
-import { AudioContext, AudioPlayerInstance } from '../contexts/AudioContext';
+
+// hooks
+import { useToggle } from '../hooks/useToggle';
 
 interface NowPlyingProps {
     track: VideoState;
-    onClick: any;
+    onClick?: any;
 }
 
-export const NowPlying: React.FC<NowPlyingProps> = ({ track, onClick }) => {
-    const { isPaused, progress, audio }: AudioPlayerInstance = useContext(
-        AudioContext,
-    );
+export const NowPlying: React.FC<NowPlyingProps> = ({
+    track,
+    onClick = () => {},
+}) => {
+    const [isOpen] = useToggle(false, 0, true);
 
-    const controllerRef = document.querySelector('#player-content');
+    const controllerRef = document.querySelector('#player');
 
     if (!controllerRef) {
         return null;
     }
 
     return ReactDOM.createPortal(
-        <Wrapper onClick={onClick}>
-            <Image src={thumbnailSelector(track)} />
-            <Title>{track.title}</Title>
-            <PlayingContainer>
-                <Playing height={50} isPaused={isPaused} />
-            </PlayingContainer>
-            <Progress value={progress || 0} />
-        </Wrapper>,
+        <PoseGroup flipMove={false}>
+            {isOpen && (
+                <AnimationInOut key="wrap">
+                    <Wrapper onClick={onClick}>
+                        <Image src={thumbnailSelector(track)} />
+                        <Title>{track.title}</Title>
+                        <PlayingContainer>
+                            <Playing height={50} isPaused={true} />
+                        </PlayingContainer>
+                    </Wrapper>
+                </AnimationInOut>
+            )}
+        </PoseGroup>,
         controllerRef,
     );
 };
 
-const Wrapper = styled.div`
+export const MemoizedNowPlying = React.memo(NowPlying);
+
+const AnimationInOut = styled(
+    posed.div({
+        enter: {
+            y: '-140%',
+            opacity: 1,
+            delay: 300,
+        },
+        exit: {
+            y: 100,
+            opacity: 0,
+        },
+    }),
+)`
     height: 60px;
     width: 95%;
     left: 2.5%;
     display: flex;
     position: absolute;
-    top: 0;
-    transform: translateY(-100%);
+    bottom: 0;
+    background-color: #fff7f7;
+`;
+
+const Wrapper = styled.div`
+    height: 60px;
+    width: 100%;
+    display: flex;
     background-color: #fff7f7;
 `;
 
 const Image = styled.img`
     height: 100%;
+    max-width: 120px;
+    object-fit: cover;
 `;
 
 const PlayingContainer = styled.div`

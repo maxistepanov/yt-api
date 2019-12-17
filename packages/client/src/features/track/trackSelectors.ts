@@ -1,7 +1,10 @@
 import { createSelector } from 'reselect';
 import { Thumbnail } from '../../interfaces';
 
-export const selectTrackStore = (state: any) => state.track;
+export const selectTrackStore = createSelector(
+    state => state,
+    (state: any) => state.track,
+);
 
 const selectThumbnails = (state: any) =>
     state && state.thumbnails ? state.thumbnails : [];

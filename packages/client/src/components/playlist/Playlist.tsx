@@ -1,17 +1,23 @@
-import React, { useContext, useState } from 'react';
+import React, {
+    useState,
+    useCallback,
+} from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
+import posed from 'react-pose';
 
 // Components
 import { ViewListRow } from '../ViewListRow';
 import { ViewBlockRow } from '../ViewBlockRow';
-import { NowPlying } from '../NowPlying';
+import { MemoizedNowPlying } from '../NowPlying';
 
 // selectors
 import { selectTrackStore } from '../../features/track/trackSelectors';
 
 import { RouterProps, VideoState } from '../../interfaces';
-import { AudioContext, AudioPlayerInstance } from '../../contexts/AudioContext';
+
+// hooks
+import { useToggle } from '../../hooks/useToggle';
 
 interface PlayListProps extends RouterProps {
     list: VideoState[];
@@ -25,45 +31,58 @@ enum PlayListView {
     block = 2,
 }
 
+const Item = posed.div({
+    open: { y: 0, opacity: 1 },
+    closed: { y: 20, opacity: 0 },
+});
+
 export const Playlist: React.FC<PlayListProps> = ({
     list,
     onSelect,
     onRemove,
 }) => {
-    const { audio }: AudioPlayerInstance = useContext(AudioContext);
     const refs: any = {};
     const track: VideoState = useSelector(selectTrackStore);
 
     const [type, setType] = useState(PlayListView.block);
 
+    const [isOpen] = useToggle(false, 100, true);
+
     const Row = type === PlayListView.block ? ViewBlockRow : ViewListRow;
-    const onClickByPlyingNow = () => {
-        console.log('refsc', refs);
-        if (refs[track.video_id]) {
-            refs[track.video_id].scrollIntoView({
-                behavior: 'smooth',
-            });
-        }
-    };
+
+    const onClickByPlyingNow = useCallback(
+        () => {
+            if (refs[track.video_id]) {
+                refs[track.video_id].scrollIntoView({
+                    behavior: 'smooth',
+                });
+            }
+        },
+        [refs, track],
+    );
 
     return (
         <BorderRadius>
             <Container type={type}>
-                <List>
+                <List pose={isOpen ? 'open' : 'closed'}>
                     {list.map((video: VideoState) => {
                         return (
-                            <Row
-                                refs={refs}
-                                key={video.video_id}
-                                onSelect={onSelect}
-                                onRemove={onRemove}
-                                video={video}
-                            />
+                            <Item key={video.video_id}>
+                                <Row
+                                    refs={refs}
+                                    onSelect={onSelect}
+                                    onRemove={onRemove}
+                                    video={video}
+                                />
+                            </Item>
                         );
                     })}
                 </List>
                 {track && (
-                    <NowPlying track={track} onClick={onClickByPlyingNow} />
+                    <MemoizedNowPlying
+                        track={track}
+                        onClick={onClickByPlyingNow}
+                    />
                 )}
             </Container>
         </BorderRadius>
@@ -99,7 +118,19 @@ const Container = styled.div<ContainerProps>`
     }
 `;
 
-const List = styled.div`
+const List = styled(
+    posed.div({
+        open: {
+            // x: '0%',
+            delayChildren: 200,
+            staggerChildren: 50,
+        },
+        closed: {
+            // x: '-100%',
+            delay: 300,
+        },
+    }),
+)`
     display: flex;
     flex-direction: column;
 `;
