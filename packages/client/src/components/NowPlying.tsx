@@ -77,6 +77,7 @@ const Wrapper = styled.div`
     width: 100%;
     display: flex;
     background-color: #fff7f7;
+    box-shadow: 0px 7px 31px 4px #656565;
 `;
 
 const Image = styled.img`

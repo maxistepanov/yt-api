@@ -29,7 +29,10 @@ import { useApi, useApiInstance } from '../../hooks/useApi';
 import { VideoState } from '../../interfaces';
 
 // selectors
-import { playlistSelector } from '../../features/playlist/playlistSelector';
+import {
+    playlistSelector,
+    selectPlaylist,
+} from '../../features/playlist/playlistSelector';
 import { trackActions } from 'features/track/trackSlice';
 import { playlistActions } from '../../features/playlist/playlistSlice';
 import {
@@ -65,6 +68,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
 
     const track = useSelector(selectTrackStore);
     const state = useSelector(state => state);
+    const playlist = useSelector(selectPlaylist);
 
     useEffect(
         () => {
@@ -110,12 +114,18 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     const onNewTrack = async (video: videoInfo) => {
         navigate('playlist');
 
-        dispatch(
-            playlistActions.add({
-                ...video,
-                saved: false,
-            }),
+        const isExist = playlist.find(
+            (track: VideoState) => track.video_id === video.video_id,
         );
+
+        if (!isExist) {
+            dispatch(
+                playlistActions.add({
+                    ...video,
+                    saved: false,
+                }),
+            );
+        }
     };
 
     useEffect(() => {

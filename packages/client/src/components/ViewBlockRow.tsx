@@ -1,9 +1,7 @@
 import React, { useContext, HTMLAttributes } from 'react';
 import { VideoState } from '../interfaces';
 import styled from 'styled-components';
-import {
-    thumbnailSelector,
-} from '../features/track/trackSelectors';
+import { thumbnailSelector } from '../features/track/trackSelectors';
 import { Playing } from './Playing';
 import { AudioContext, AudioPlayerInstance } from '../contexts/AudioContext';
 
