@@ -32,32 +32,38 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({
     track,
     ...props
 }) => {
-    const {
-        audio,
-        isPaused,
-        progress,
-        total,
-        current,
-        setCurrentTime,
-    } = useContext(AudioContext);
+    const { audio, progress, total, current, setCurrentTime } = useContext(
+        AudioContext,
+    );
 
     const [offsetWidth, setOffsetWidth] = useState<number>(0);
     const [lastMove, setLastMove] = useState<any>(null);
     const [onTouch, setOnTouch] = useState<any>(null);
 
-    const [video, setVideo] = useState<videoFormat>();
-
     const [captions, setCaptions] = useState<any>();
 
-    const videoRef = useRef<HTMLVideoElement>(null);
     const seekAreaRef = useRef<HTMLDivElement>(null);
     const timeRef = useRef<HTMLDivElement>(null);
     const sHoverRef = useRef<HTMLDivElement>(null);
     const pointRef = useRef<HTMLDivElement>(null);
 
+    const getRefs = () => {
+        const time = timeRef.current;
+        const hover = sHoverRef.current;
+        const seekArea = seekAreaRef.current;
+        const point = seekAreaRef.current;
+        return {
+            time,
+            hover,
+            seekArea,
+            point,
+        };
+    };
+
     const updateOffsetWidth = () => {
-        if (seekAreaRef && seekAreaRef.current) {
-            setOffsetWidth(seekAreaRef.current.offsetWidth);
+        const { seekArea } = getRefs();
+        if (seekArea) {
+            setOffsetWidth(seekArea.offsetWidth);
         }
     };
 
@@ -69,29 +75,12 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({
     }, []);
 
     useEffect(() => {
-        const fn = () => {
+        const removeOnMouseUp = () =>
             window.removeEventListener('mousemove', onPointMove);
-        };
-        window.addEventListener('mouseup', fn);
+        window.addEventListener('mouseup', removeOnMouseUp);
 
-        return () => window.removeEventListener('mouseup', fn);
+        return () => window.removeEventListener('mouseup', removeOnMouseUp);
     }, []);
-
-    useEffect(
-        () => {
-            console.log('track', track);
-
-            if (track && track.videoFormat) {
-                const video = track.videoFormat.find(
-                    (format: videoFormat) => !!format.bitrate,
-                );
-                if (video) {
-                    setVideo(video);
-                }
-            }
-        },
-        [track],
-    );
 
     // captions
     useEffect(
@@ -108,11 +97,13 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({
     };
 
     const onSeekHover = (event: any) => {
-        const { clientX } = event;
-
-        if (seekAreaRef && seekAreaRef.current) {
-            const time = getSeekTime(clientX);
-            const seekTime = getValueInBetween(time, 0, offsetWidth);
+        const { seekArea, time, hover } = getRefs();
+        if (seekArea) {
+            const seekTime = getValueInBetween(
+                getSeekTime(event.clientX),
+                0,
+                offsetWidth,
+            );
 
             //
             const nextTime: number = audio.duration * (seekTime / offsetWidth);
@@ -123,37 +114,32 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({
                 transform: translateX(${seekTime}px);
             `;
 
-            if (timeRef && timeRef.current) {
+            if (time) {
                 // hover time
-                timeRef.current.innerHTML = getTimeString(nextTime);
-                timeRef.current.style.cssText = cssText.join('');
+                time.innerHTML = getTimeString(nextTime);
+                time.style.cssText = cssText.join('');
             }
 
-            if (sHoverRef && sHoverRef.current) {
+            if (hover) {
                 // hover time line
-                sHoverRef.current.style.opacity = '0.2';
-                sHoverRef.current.style.width = seekTime + 'px';
+                hover.style.opacity = '0.2';
+                hover.style.width = seekTime + 'px';
             }
         }
     };
 
     const hideSeekHover = () => {
-        if (timeRef && timeRef.current && sHoverRef && sHoverRef.current) {
-            timeRef.current.style.opacity = '0';
-            sHoverRef.current.style.opacity = '0';
+        const { time, hover } = getRefs();
+        if (time && hover) {
+            time.style.opacity = '0';
+            hover.style.opacity = '0';
         }
     };
 
     function playFromClickedPos(event: any) {
-        const { clientX } = event;
         if (audio && audio.src) {
-            const seekTime = getSeekTime(clientX);
+            const seekTime = getSeekTime(event.clientX);
             const time = audio.duration * (seekTime / offsetWidth);
-
-            if (videoRef && videoRef.current) {
-                videoRef.current.currentTime = time;
-                videoRef.current.play();
-            }
 
             setCurrentTime(time);
             hideSeekHover();
@@ -161,9 +147,9 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({
     }
 
     const getSeekTime = (clientX: number): number => {
-        const { current: area } = seekAreaRef;
-        if (area) {
-            const rect: ClientRect | DOMRect = area.getBoundingClientRect();
+        const { seekArea } = getRefs();
+        if (seekArea) {
+            const rect: ClientRect | DOMRect = seekArea.getBoundingClientRect();
             return clientX - rect.left;
         }
         return 0;
@@ -200,7 +186,9 @@ export const PlayerTrack: React.FC<PlayerTrackProps> = ({
                 <Link to="podcast">
                     <ModeIcon className="fas fa-podcast" />
                 </Link>
-                <ModeIcon className="fas fa-video" />
+                <Link to="video">
+                    <ModeIcon className="fas fa-video" />
+                </Link>
                 {track &&
                     track.captions && (
                         <Link to="captions">

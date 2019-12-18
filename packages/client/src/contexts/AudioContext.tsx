@@ -9,6 +9,8 @@ export interface AudioPlayerInstance {
     isPaused: boolean;
     setPaused: Function;
     playPause: any;
+    isVideo: boolean;
+    turnToVideo(state: boolean): void;
     skipTime(forward?: boolean): any;
     setCurrentTime(time: number): any;
     playBackToggle(): void;
@@ -24,8 +26,10 @@ export const AudioContext: Context<AudioPlayerInstance> = React.createContext<
     current: '',
     isPaused: true,
     progress: 0,
+    isVideo: false,
     setPaused: () => {},
     playPause: () => {},
+    turnToVideo: () => {},
     setCurrentTime: () => {},
     playBackToggle: () => {},
     skipTime: () => () => {},
@@ -38,66 +42,76 @@ interface AudioContextProviderProps {
     children: React.ReactNode;
 }
 
+const videoElement = document.createElement('video');
+
 export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
     children,
 }) => {
+    const audio: HTMLMediaElement = videoElement;
+    audio.controls = true;
     const context = useContext(AudioContext);
     const [speed, setSpeed] = useState<number>(1.0);
     const [isPaused, setPaused] = useState<boolean>(true);
+    const [isVideo, turnToVideo] = useState<boolean>(false);
     const [progress, setProgress] = useState<number>(0);
     const [total, setTotal] = useState<string>('00:00');
     const [current, setCurrent] = useState<string>('00:00');
 
     // watching a play status
-    useEffect(() => {
-        const { audio } = context;
+    useEffect(
+        () => {
+            const onPlayChange = (event: any) => {
+                setPaused(event.type === 'pause');
+            };
 
-        const onPlayChange = (event: any) => {
-            setPaused(event.type === 'pause');
-        };
+            audio.addEventListener('play', onPlayChange);
+            audio.addEventListener('pause', onPlayChange);
 
-        audio.addEventListener('play', onPlayChange);
-        audio.addEventListener('pause', onPlayChange);
-
-        return () => {
-            audio.removeEventListener('play', onPlayChange);
-            audio.removeEventListener('pause', onPlayChange);
-        };
-    }, []);
+            return () => {
+                audio.removeEventListener('play', onPlayChange);
+                audio.removeEventListener('pause', onPlayChange);
+            };
+        },
+        [audio],
+    );
 
     // watching error
-    useEffect(() => {
-        const { audio } = context;
-        const onError = (e: any) => {
-            setPaused(true);
-            console.log('e', e);
-        };
+    useEffect(
+        () => {
+            const onError = (e: any) => {
+                setPaused(true);
+                console.log('e', e);
+            };
 
-        audio.addEventListener('error', onError);
+            audio.addEventListener('error', onError);
 
-        return () => audio.removeEventListener('error', onError);
-    }, []);
+            return () => audio.removeEventListener('error', onError);
+        },
+        [audio],
+    );
 
-    useEffect(() => {
-        const { audio }: AudioPlayerInstance = context;
-        const timeUpdate = (event: any) => {
-            const { currentTime, duration } = audio;
+    useEffect(
+        () => {
+            const timeUpdate = (event: any) => {
+                const { currentTime, duration } = audio;
 
-            const playProgress = (currentTime / duration) * 100;
+                const playProgress = (currentTime / duration) * 100;
 
-            setProgress(playProgress);
+                setProgress(playProgress);
 
-            setCurrent(getTimeString(currentTime));
-            setTotal(getTimeString(duration));
-        };
-        const throttleUpdate = throttle(timeUpdate, 1000);
-        audio.addEventListener('timeupdate', throttleUpdate);
+                setCurrent(getTimeString(currentTime));
+                setTotal(getTimeString(duration));
+            };
+            const throttleUpdate = throttle(timeUpdate, 1000);
+            audio.addEventListener('timeupdate', throttleUpdate);
 
-        return () => audio.removeEventListener('timeupdate', throttleUpdate);
-    }, []);
+            return () =>
+                audio.removeEventListener('timeupdate', throttleUpdate);
+        },
+        [audio],
+    );
 
     const playPause = () => {
-        const { audio } = context;
         if (audio.src) {
             if (audio.paused) {
                 audio.play();
@@ -108,14 +122,12 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
     };
 
     const setCurrentTime = (time: number) => {
-        const { audio } = context;
         if (audio.src) {
             audio.currentTime = time;
         }
     };
 
     const setPlaybackRate = (rate: number) => {
-        const { audio } = context;
         if (audio.src && rate) {
             audio.playbackRate = rate;
         }
@@ -124,8 +136,6 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
     const skipTime = (forward: boolean = true) => (
         event: React.MouseEvent<HTMLDivElement>,
     ) => {
-        const { audio } = context;
-
         audio && (audio.currentTime += forward ? 5 : -5);
     };
 
@@ -150,6 +160,9 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
                 total,
                 current,
                 speed,
+                audio,
+                turnToVideo,
+                isVideo,
                 playPause,
                 skipTime,
                 setCurrentTime,

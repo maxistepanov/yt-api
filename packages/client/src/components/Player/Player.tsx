@@ -42,6 +42,7 @@ import {
 
 // utils
 import { setMediaSession } from 'features/playlist/mediaSession';
+import { VideoPlayer } from '../VideoPlayer';
 
 interface VideoProps {
     data?: videoInfo;
@@ -66,8 +67,9 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
 
     const dispatch = useDispatch();
 
-    const track = useSelector(selectTrackStore);
     const state = useSelector(state => state);
+
+    const track = useSelector(selectTrackStore);
     const playlist = useSelector(selectPlaylist);
 
     useEffect(
@@ -104,6 +106,11 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                 }
             } else {
                 console.warn('audio is empty');
+            }
+
+            // remove playing track, in case if track is empty
+            if (!track && audio.src) {
+                audio.src = '';
             }
         },
         [track],
@@ -183,6 +190,7 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
                                             value={track.captions}
                                         />
                                     )}
+                                <VideoPlayer path="video" track={track} />
                             </PlayerTrack>
                             <AddNewTrack path="/new" onSubmit={onNewTrack} />
                             <Playlist
