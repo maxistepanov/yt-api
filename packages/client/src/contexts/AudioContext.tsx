@@ -48,7 +48,6 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
     children,
 }) => {
     const audio: HTMLMediaElement = videoElement;
-    audio.controls = true;
     const context = useContext(AudioContext);
     const [speed, setSpeed] = useState<number>(1.0);
     const [isPaused, setPaused] = useState<boolean>(true);
@@ -133,10 +132,10 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
         }
     };
 
-    const skipTime = (forward: boolean = true) => (
-        event: React.MouseEvent<HTMLDivElement>,
-    ) => {
-        audio && (audio.currentTime += forward ? 5 : -5);
+    const SKIP_SECONDS = 5;
+
+    const skipTime = (forward: boolean = true) => () => {
+        audio && (audio.currentTime += forward ? SKIP_SECONDS : -SKIP_SECONDS);
     };
 
     useEffect(
@@ -146,9 +145,7 @@ export const AudioContextProvider: React.FC<AudioContextProviderProps> = ({
         [speed],
     );
 
-    const playBackToggle = () => {
-        setSpeed(speed === 1 ? 1.25 : 1);
-    };
+    const playBackToggle = () => setSpeed(speed === 1 ? 1.25 : 1);
 
     return (
         <AudioContext.Provider

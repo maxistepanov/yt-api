@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { videoInfo } from 'ytdl-core';
-import cn from 'classnames';
 import styled from 'styled-components';
 import { navigate } from '@reach/router';
 import IMask from 'imask';
@@ -10,7 +9,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import './player.css';
 
 // components
-import { BgArtwork } from '../BgArtwork';
 import { PlayerTrack } from '../PlayerTrack/PlayerTrack';
 import { AddNewTrack } from '../AddNewTrack/AddNewTrack';
 import { Playlist } from '../playlist/Playlist';
@@ -43,6 +41,9 @@ import {
 // utils
 import { setMediaSession } from 'features/playlist/mediaSession';
 import { VideoPlayer } from '../VideoPlayer';
+import { Setting } from '../Setting';
+import { withBackground } from '../hoc/withBackground';
+import { Icon, IconButton } from 'rsuite';
 
 interface VideoProps {
     data?: videoInfo;
@@ -56,7 +57,7 @@ const masked = IMask.createMask({
     normalizeZeros: true,
 });
 
-export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
+const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     const {
         audio,
         isPaused,
@@ -171,98 +172,95 @@ export const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
 
     return (
         <Container>
-            <div id="app-cover">
-                <BgArtwork src={thumbnailSelector(track)} />
-                <div id="player">
-                    <PageContainer>
-                        <PosedRouter>
-                            <PlayerTrack track={track} path="/player">
-                                <AlbumArt
-                                    default={true}
-                                    path="podcast"
-                                    src={thumbnailSelector(track)}
-                                    isPaused={isPaused}
+            <div id="player">
+                <PosedRouter>
+                    <PlayerTrack track={track} path="/player">
+                        <AlbumArt
+                            default={true}
+                            path="podcast"
+                            src={thumbnailSelector(track)}
+                            isPaused={isPaused}
+                        />
+                        {track &&
+                            track.captions && (
+                                <Captions
+                                    path="captions"
+                                    value={track.captions}
                                 />
-                                {track &&
-                                    track.captions && (
-                                        <Captions
-                                            path="captions"
-                                            value={track.captions}
-                                        />
-                                    )}
-                                <VideoPlayer path="video" track={track} />
-                            </PlayerTrack>
-                            <AddNewTrack path="/new" onSubmit={onNewTrack} />
-                            <Playlist
-                                path="/playlist"
-                                list={playlistSelector(state)}
-                                active={track}
-                                onSelect={onSelectTrack}
-                                onRemove={onRemove}
+                            )}
+                        <VideoPlayer path="video" track={track} />
+                    </PlayerTrack>
+                    <AddNewTrack path="/new" onSubmit={onNewTrack} />
+                    <Playlist
+                        path="/playlist"
+                        list={playlistSelector(state)}
+                        active={track}
+                        onSelect={onSelectTrack}
+                        onRemove={onRemove}
+                    />
+                    <Setting path="/setting" />
+                </PosedRouter>
+                <PlayerContent id="player-content">
+                    <PlayerControls>
+                        <Control onClick={() => pageToggle('/setting')}>
+                            <IconButton
+                                appearance="subtle"
+                                icon={<Icon icon="bars" />}
                             />
-                        </PosedRouter>
-                    </PageContainer>
-                    <div id="player-content">
-                        <div id="player-controls">
-                            <div className="control">
-                                <div className="button">
-                                    <i className="fas fa-bars" />
-                                </div>
-                            </div>
-                            <div
-                                className="control"
-                                onClick={audioService.playBackToggle}
-                            >
-                                <div className="button">
-                                    x
-                                    {masked.resolve(String(audioService.speed))}
-                                </div>
-                            </div>
-                            <div className="control" onClick={skipTime(false)}>
-                                <div className="button">
-                                    <i className="fas fa-undo" />
-                                </div>
-                            </div>
-                            <div className="control">
-                                <div
-                                    className="button"
-                                    id="play-pause-button"
-                                    onClick={onStartPlay}
-                                >
-                                    <i
-                                        className={cn('fas', {
-                                            'fa-play': isPaused,
-                                            'fa-pause': !isPaused,
-                                        })}
+                        </Control>
+                        <Control onClick={audioService.playBackToggle}>
+                            <IconButton
+                                appearance="subtle"
+                                icon={
+                                    <Icon
+                                        icon={
+                                            audioService.speed === 1
+                                                ? 'forward'
+                                                : 'fast-forward'
+                                        }
                                     />
-                                </div>
-                            </div>
+                                }
+                            />
+                        </Control>
+                        <Control onClick={skipTime(false)}>
+                            <IconButton
+                                appearance="subtle"
+                                style={{ paddingLeft: '12px' }}
+                                icon={<i className="fas fa-undo" />}
+                            />
+                        </Control>
+                        <Control>
+                            <IconButton
+                                appearance="subtle"
+                                onClick={onStartPlay}
+                                icon={
+                                    <Icon icon={isPaused ? 'play' : 'pause'} />
+                                }
+                            />
+                        </Control>
 
-                            <div className="control" onClick={skipTime(true)}>
-                                <div className="button">
-                                    <i className="fas fa-redo" />
-                                </div>
-                            </div>
-                            <div
-                                className="control"
-                                onClick={() => pageToggle('/playlist')}
-                            >
-                                <div className="button">
-                                    <i className="fas fa-list" />
-                                </div>
-                            </div>
+                        <Control onClick={skipTime(true)}>
+                            <IconButton
+                                appearance="subtle"
+                                style={{ paddingLeft: '12px' }}
+                                icon={<i className="fas fa-redo" />}
+                            />
+                        </Control>
+                        <Control onClick={() => pageToggle('/playlist')}>
+                            <IconButton
+                                appearance="subtle"
+                                icon={<Icon icon="list" />}
+                            />
+                        </Control>
 
-                            <div
-                                className="control"
-                                onClick={() => pageToggle('/new')}
-                            >
-                                <div className="button">
-                                    <i className="fas fa-plus" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                        <Control onClick={() => pageToggle('/new')}>
+                            <IconButton
+                                appearance="subtle"
+                                icon={<Icon icon="plus" />}
+                            />
+                        </Control>
+                    </PlayerControls>
+                </PlayerContent>
             </div>
         </Container>
     );
@@ -273,15 +271,40 @@ const Container = styled.div`
     min-height: 100vh;
     max-height: 100vh;
     display: flex;
-    overflow: hidden;
+    //overflow: hidden;
+    width: 96vw;
+    margin: 0 auto 12px auto;
 `;
 
-const PageContainer = styled.div`
-    position: relative;
-    height: 100%;
+const Control = styled.div`
+    padding: 12px 0;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    transform: translateY(-82px);
-    width: 95%;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    user-select: none;
 `;
+
+const PlayerControls = styled.div`
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+`;
+
+const PlayerContent = styled.div`
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 30px 80px #656565;
+    border-radius: 15px;
+    z-index: 2;
+    display: flex;
+    justify-content: flex-end;
+    bottom: 0;
+    width: 100%;
+    padding: 8px 0;
+`;
+
+export default withBackground(Player);

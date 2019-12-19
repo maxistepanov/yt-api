@@ -53,7 +53,7 @@ export const MemoizedNowPlying = React.memo(NowPlying);
 const AnimationInOut = styled(
     posed.div({
         enter: {
-            y: '-140%',
+            y: '-125%',
             opacity: 1,
             delay: 300,
         },

@@ -12,9 +12,9 @@ const defaultImage =
 export const BgArtwork: React.FC<BgArtworkProps> = ({ src }) => {
     return (
         <React.Fragment>
-            <div id="bg-layer" />
-            <BackgroundGradient />
-            {/*{src && <Artwork id="bg-artwork" image={src || defaultImage} />}*/}
+            <Layer />
+            {/*<BackgroundGradient />*/}
+            {src && <Artwork id="bg-artwork" image={src || defaultImage} />}
         </React.Fragment>
     );
 };
@@ -34,4 +34,15 @@ const Artwork = styled.img<ArtworkProps>`
 const Wrapper = styled.div`
     position: absolute;
     left: 0;
+`;
+
+const Layer = styled.div`
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #fff;
+    opacity: 0.51;
+    z-index: 2;
 `;
