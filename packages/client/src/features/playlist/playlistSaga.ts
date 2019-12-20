@@ -11,6 +11,10 @@ import { playlistSelector } from './playlistSelector';
 
 // interfaces
 import { GetPlaylistResponse, VideoState } from '../../interfaces';
+import { PayloadAction } from '@reduxjs/toolkit';
+
+// services
+import MediaService from '../../services/MediaService';
 
 function* getPlaylistAsync() {
     try {
@@ -28,38 +32,15 @@ function* getPlaylistAsync() {
             }),
         );
 
-        const notSavedItems = playlist.filter(
-            (item: VideoState) =>
-                !data.find((data: any) => data.video_id === item.video_id),
-        );
-
-        yield put(playlistActions.updateAll([...data, ...notSavedItems]));
-
-        if (notSavedItems && Array.isArray(notSavedItems)) {
-            for (const notSavedItem of notSavedItems) {
-                // TODO: use existing saga call
-                const res = yield call(ApiService.post, 'add-video', {
-                    video: notSavedItem,
-                });
-
-                yield put(
-                    playlistActions.updateOne({
-                        ...res,
-                        saved: true,
-                    }),
-                );
-            }
-        }
+        yield put(playlistActions.updateAll(data));
     } catch (e) {
         console.log('err');
     }
 }
 
-function* saveVideoToDb(action: any) {
+function* saveVideoToDb(action: PayloadAction<VideoState>) {
     try {
-        const res = yield call(ApiService.post, 'add-video', {
-            video: action.payload,
-        });
+        const res = yield call(MediaService.add, action.payload);
 
         yield put(
             playlistActions.updateOne({
@@ -68,11 +49,11 @@ function* saveVideoToDb(action: any) {
             }),
         );
     } catch (e) {
-        console.error('saveVideoToDb error');
+        console.error('saveVideoToDb error', e);
     }
 }
 
-function* removeFromDb(action: any) {
+function* removeFromDb(action: PayloadAction<VideoState>) {
     try {
         yield call(ApiService.post, 'remove-video', action.payload);
     } catch (e) {

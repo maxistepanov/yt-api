@@ -17,7 +17,7 @@ export class Video {
     @Column({
         length: 500,
     })
-    name!: string;
+    title!: string;
 
     @Column({
         length: 100,
@@ -28,6 +28,11 @@ export class Video {
         type: 'simple-json',
     })
     json!: any;
+
+    @Column({
+        type: 'simple-json',
+    })
+    formats!: any;
 
     @CreateDateColumn() createdAt!: string;
 

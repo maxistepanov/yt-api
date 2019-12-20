@@ -1,24 +1,22 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import posed, { PoseGroup } from 'react-pose';
-import { Scroll } from 'framer';
+import styled from 'styled-components';
+import ReactDOM from 'react-dom';
 
-// Components
-import { ViewListRow } from '../ViewListRow';
+// components
 import { ViewBlockRow } from '../ViewBlockRow';
-import { MemoizedNowPlying } from '../NowPlying';
+import CurrentTrackWidget from '../CurrentTrackWidget';
+import { PosedSwipe } from '../PosedSwipe';
 
 // selectors
 import { selectTrackStore } from '../../features/track/trackSelectors';
 
+// interfaces
 import { RouterProps, VideoState } from '../../interfaces';
 
 // hooks
 import { useToggle } from '../../hooks/useToggle';
-
-// Demo swipe
-import { PosedSwipe } from '../PosedSwipe';
-import styled from 'styled-components';
 
 interface PlayListProps extends RouterProps {
     list: VideoState[];
@@ -27,14 +25,25 @@ interface PlayListProps extends RouterProps {
     active: VideoState;
 }
 
-enum PlayListView {
-    list = 1,
-    block = 2,
-}
-
 const Item = posed.div({
-    open: { y: 0, opacity: 1 },
-    closed: { y: 20, opacity: 0 },
+    open: {
+        y: 0,
+        opacity: 1,
+        transition: {
+            y: {
+                easy: 'easyIn',
+            },
+        },
+    },
+    closed: {
+        y: 20,
+        opacity: 0,
+        transition: {
+            y: {
+                easy: 'easyIn',
+            },
+        },
+    },
     exit: {
         opacity: 0,
         transition: { duration: 150 },
@@ -47,12 +56,11 @@ export const Playlist: React.FC<PlayListProps> = ({
     onRemove,
 }) => {
     const refs: any = {};
+    const currentTrackRef = useRef<HTMLDivElement>(null);
     const track: VideoState = useSelector(selectTrackStore);
-    const [type, setType] = useState(PlayListView.block);
+    const root = document.getElementById('widget');
 
     const [isOpen] = useToggle(false, 100, true);
-
-    const Row = type === PlayListView.block ? ViewBlockRow : ViewListRow;
 
     const onClickByPlyingNow = useCallback(
         () => {
@@ -65,70 +73,114 @@ export const Playlist: React.FC<PlayListProps> = ({
         [refs, track],
     );
 
+    const widgetObserver = ([entry]: IntersectionObserverEntry[]) => {
+        if (entry.isIntersecting && track && root) {
+            ReactDOM.render(
+                <CurrentTrackWidget
+                    isOpen={entry.intersectionRatio < 0.5}
+                    track={track}
+                    onClick={onClickByPlyingNow}
+                />,
+                root,
+            );
+        }
+    };
+
+    useEffect(
+        () => {
+            const ref = currentTrackRef.current;
+
+            const options: IntersectionObserverInit = {
+                rootMargin: '0px',
+                threshold: new Array(100)
+                    .fill(1)
+                    .map((_, index) => index / 100),
+            };
+
+            const observer = new IntersectionObserver(widgetObserver, options);
+
+            if (ref) {
+                observer.observe(ref);
+
+                return () => {
+                    if (ref) {
+                        observer.unobserve(ref);
+                    }
+                };
+            }
+        },
+        [currentTrackRef, track, onClickByPlyingNow],
+    );
+
+    useEffect(() => {
+        return () => {
+            widgetObserver([
+                {
+                    isIntersecting: true,
+                    intersectionRatio: 1,
+                } as IntersectionObserverEntry,
+            ]);
+        };
+    }, []);
+
     return (
         <BorderRadius>
-            <Container type={type}>
+            <Container>
                 <List pose={isOpen ? 'open' : 'closed'}>
                     <PoseGroup>
                         {list.map((video: VideoState) => {
+                            const { video_id } = video;
                             return (
-                                <Item key={video.video_id}>
-                                    <PosedSwipe
-                                        key={video.video_id}
-                                        onSwipeLeft={() => onRemove(video)}
-                                        onClick={() => onSelect(video)}
+                                <Item key={video_id}>
+                                    <div
+                                        ref={
+                                            track && video_id === track.video_id
+                                                ? currentTrackRef
+                                                : null
+                                        }
                                     >
-                                        <Row
-                                            refs={refs}
-                                            onSelect={onSelect}
-                                            video={video}
-                                            onRemove={onRemove}
-                                            active={track}
-                                        />
-                                    </PosedSwipe>
+                                        <PosedSwipe
+                                            key={video_id}
+                                            onSwipeLeft={() => onRemove(video)}
+                                            onClick={() => onSelect(video)}
+                                        >
+                                            <ViewBlockRow
+                                                refs={refs}
+                                                onSelect={onSelect}
+                                                video={video}
+                                                onRemove={onRemove}
+                                                active={track}
+                                            />
+                                        </PosedSwipe>
+                                    </div>
                                 </Item>
                             );
                         })}
                     </PoseGroup>
                 </List>
-                {track && (
-                    <MemoizedNowPlying
-                        track={track}
-                        onClick={onClickByPlyingNow}
-                    />
-                )}
+                {/*{track && (*/}
+                {/*<CurrentTrackWidget*/}
+                {/*track={track}*/}
+                {/*onClick={onClickByPlyingNow}*/}
+                {/*/>*/}
+                {/*)}*/}
             </Container>
         </BorderRadius>
     );
 };
 
-interface ContainerProps {
-    type: number;
-}
-
 const BorderRadius = styled.div`
     border-radius: 15px;
 `;
 
-const Title = styled.h3`
-    color: #5a5858;
-    z-index: 20;
-    background-color: #fff7f7;
-    padding: 0 15px !important;
-`;
-
-const Container = styled.div<ContainerProps>`
-    padding: ${props => (props.type === PlayListView.block ? 0 : 15)}px;
-    height: 85vh;
+const Container = styled.div`
+    height: calc(100vh - 100px);
     background-color: #fff7f7;
     border-radius: 15px 15px 0 0;
     transition: 0.3s ease transform, opacity;
     z-index: 1;
     overflow: auto;
     position: relative;
-    ${Title} {
-        padding: ${props => (props.type === PlayListView.block ? '0 15px' : 0)};
-    }
 `;
 
 const List = styled(

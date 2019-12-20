@@ -41,6 +41,7 @@ export const Input = styled.input`
 
 export const Title = styled.h3`
     color: #5a5858;
+    font-size: 18px;
 `;
 
 export const List = styled.div`

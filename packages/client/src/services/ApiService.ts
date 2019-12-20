@@ -1,9 +1,11 @@
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import axios from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+
+// interfaces
+import { ApiInstance } from '../interfaces/api.interface';
 
 const parseData = <T>(response: AxiosResponse<T>): T => response.data;
 
-class ApiService {
+class ApiService implements ApiInstance {
     private http = axios.create({
         baseURL: process.env.REACT_APP_API_URL,
     });

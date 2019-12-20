@@ -35,20 +35,19 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = () => {
         () => {
             if (canvasRef && canvasRef.current && isVideo) {
                 const canvas = canvasRef.current;
-
                 const ctx = canvas.getContext('2d');
-                // containerRef.current.append(audio);
-                audio.addEventListener('loadedmetadata', () => {
-                    if (audio instanceof HTMLVideoElement) {
-                        canvas.width = audio.videoWidth;
-                        // canvas.height = audio.videoHeight;
-                        const scaleValue =
-                            (canvas.clientWidth * 100) / audio.videoWidth;
-                        const height = (audio.videoHeight * scaleValue) / 100;
 
-                        canvas.height = height;
+                const canvasSize = () => {
+                    if (audio instanceof HTMLVideoElement) {
+                        const { videoWidth, videoHeight } = audio;
+
+                        canvas.width = videoWidth;
+                        const scaleValue =
+                            (canvas.clientWidth * 100) / videoWidth;
+                        canvas.height = (videoHeight * scaleValue) / 100;
                     }
-                });
+                };
+
                 const loop = () => {
                     if (audio.paused || audio.ended) {
                         return;
@@ -60,6 +59,14 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = () => {
                     setTimeout(() => requestAnimationFrame(loop), 1000 / 60);
                 };
                 audio.addEventListener('play', loop);
+                audio.addEventListener('loadedmetadata', canvasSize);
+                window.addEventListener('resize', canvasSize);
+
+                return () => {
+                    audio.removeEventListener('play', loop);
+                    audio.removeEventListener('loadedmetadata', canvasSize);
+                    window.removeEventListener('resize', canvasSize);
+                };
             }
         },
         [canvasRef.current, isVideo, audio],
@@ -121,8 +128,8 @@ const Container = styled.div`
     }
 
     canvas {
-        min-width: 100%;
+        min-width: calc(100% + 44px);
         max-height: 100%;
-        border-radius: 8px;
+        //border-radius: 8px;
     }
 `;

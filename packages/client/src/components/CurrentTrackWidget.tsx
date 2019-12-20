@@ -10,20 +10,17 @@ import { Playing } from './Playing';
 import { VideoState } from '../interfaces';
 import { thumbnailSelector } from '../features/track/trackSelectors';
 
-// hooks
-import { useToggle } from '../hooks/useToggle';
-
 interface NowPlyingProps {
     track: VideoState;
     onClick?: any;
+    isOpen: boolean;
 }
 
-export const NowPlying: React.FC<NowPlyingProps> = ({
+const CurrentTrackWidget: React.FC<NowPlyingProps> = ({
     track,
     onClick = () => {},
+    isOpen,
 }) => {
-    const [isOpen] = useToggle(false, 0, true);
-
     const controllerRef = document.querySelector('#player');
 
     if (!controllerRef) {
@@ -48,18 +45,25 @@ export const NowPlying: React.FC<NowPlyingProps> = ({
     );
 };
 
-export const MemoizedNowPlying = React.memo(NowPlying);
+export default React.memo(CurrentTrackWidget);
 
 const AnimationInOut = styled(
     posed.div({
         enter: {
             y: '-125%',
             opacity: 1,
-            delay: 300,
+            transition: {
+                // duration: 200,
+                y: { easy: 'easyIn' },
+            },
         },
         exit: {
             y: 100,
             opacity: 0,
+            transition: {
+                // duration: 200,
+                y: { easy: 'easyOut' },
+            },
         },
     }),
 )`

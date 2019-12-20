@@ -17,7 +17,7 @@ interface ViewBlockRowProps {
 }
 
 export const ViewBlockRow: React.FC<ViewBlockRowProps> = React.memo(
-    ({ onSelect, video, onRemove, refs, active }) => {
+    ({ onSelect, video, onRemove, refs, active, ...props }) => {
         const { video_id, title } = video;
         const { isPaused, progress, audio }: AudioPlayerInstance = useContext(
             AudioContext,

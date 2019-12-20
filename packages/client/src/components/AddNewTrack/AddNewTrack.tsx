@@ -18,7 +18,7 @@ import {
     YouTubeFrame,
     YouTubeFrameHolder,
 } from './styles';
-import ApiService from '../../services/ApiService';
+import MediaService from '../../services/MediaService';
 
 interface AddNewTrackProps extends RouterProps {
     onSubmit: any;
@@ -43,12 +43,12 @@ export const AddNewTrack: React.FC<AddNewTrackProps> = ({ onSubmit }) => {
         () => {
             if (validateURL(text)) {
                 setLoading(true);
-                ApiService.get<videoInfo>('get-info?url=' + text)
+                MediaService.info(text)
                     .then((data: videoInfo) => {
                         setLoading(false);
                         setData(data);
                     })
-                    .catch(err => setLoading(false));
+                    .catch((err: any) => setLoading(false));
             }
         },
         [text],

@@ -3,6 +3,8 @@ import {
     ClassSerializerInterceptor,
     Controller,
     Get,
+    InternalServerErrorException,
+    NotFoundException,
     Post,
     Query,
     UseInterceptors,
@@ -31,20 +33,22 @@ export class AppController {
 
     @Get('get-info')
     async get(@Query('url') url: string): Promise<any> {
-        const info: videoInfo = await getInfo(url);
+        try {
+            const info: videoInfo = await getInfo(url);
 
-        return new VideoEntity({
-            ...info,
-            formats: filterFormats(info.formats, 'audioonly'),
-            videoFormat: filterFormats(info.formats, 'videoonly'),
-        });
+            return new VideoEntity(info);
+        } catch (e) {
+            throw new InternalServerErrorException();
+        }
     }
 
     @Post('add-video')
-    async add(@Body() payload) {
+    async add(@Body() payload: videoInfo) {
         const video = new Video({
-            name: payload.video.title,
-            videoId: payload.video.video_id,
+            name: payload.title,
+            title: payload.title,
+            videoId: payload.video_id,
+            formats: payload.formats,
         });
 
         return this.playlistRepository.save(new Video(video));
@@ -53,23 +57,32 @@ export class AppController {
     @Post('remove-video')
     async remove(@Body() payload) {
         const video = await this.playlistRepository.findOne(payload.id);
+        if (video) {
+            return this.playlistRepository.remove(video);
+        }
 
-        return this.playlistRepository.remove(video);
+        throw new NotFoundException();
     }
 
     @Get('get-playlist')
     async getPlaylist(): Promise<any> {
-        const playlist = await this.playlistRepository.find();
-        return Promise.all(
-            playlist.map(async (video: Video) => {
-                const info: videoInfo = await getInfo(String(video.videoId));
-                const json = new VideoEntity(info);
+        try {
+            const playlist = await this.playlistRepository.find();
+            return Promise.all(
+                playlist.map(async (video: Video) => {
+                    const info: videoInfo = await getInfo(
+                        String(video.videoId),
+                    );
+                    const json = new VideoEntity(info);
 
-                return {
-                    ...video,
-                    json: classToPlain(json),
-                };
-            }),
-        );
+                    return {
+                        ...video,
+                        json: classToPlain(json),
+                    };
+                }),
+            );
+        } catch (e) {
+            return e;
+        }
     }
 }

@@ -13,7 +13,7 @@ export const BgArtwork: React.FC<BgArtworkProps> = ({ src }) => {
     return (
         <React.Fragment>
             <Layer />
-            {/*<BackgroundGradient />*/}
+            {!src && <BackgroundGradient />}
             {src && <Artwork id="bg-artwork" image={src || defaultImage} />}
         </React.Fragment>
     );

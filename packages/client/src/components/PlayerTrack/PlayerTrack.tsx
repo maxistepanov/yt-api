@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { format } from 'date-fns';
-import { Link, Router } from '@reach/router';
+import { Link } from '@reach/router';
 
 // utils
 import { getTimeString, getValueInBetween } from '../../utils';
@@ -11,17 +11,9 @@ import { AudioContext } from '../../contexts/AudioContext';
 
 // interfaces
 import { RouterProps, VideoState } from '../../interfaces';
-import { videoFormat } from 'ytdl-core';
-
-// selectors
-import { thumbnailSelector } from '../../features/track/trackSelectors';
-
-// components
-import { AlbumArt } from '../AlbumArt';
 
 // styles
 import { AlbumName, AlbumNameWrapper, Point, TimePicker } from './styles';
-import { Captions } from '../Captions';
 
 interface PlayerTrackProps extends RouterProps {
     track?: VideoState;
