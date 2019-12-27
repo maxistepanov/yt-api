@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { useSpring, animated, interpolate } from 'react-spring';
-import { useGesture } from 'react-with-gesture';
+import React, {useEffect, useState} from 'react';
+import { useSpring, animated, interpolate, config } from 'react-spring';
+import { useGesture, useDrag } from 'react-use-gesture';
 
 interface SwipeProps {
     children: any;
@@ -9,49 +9,74 @@ interface SwipeProps {
 }
 
 export const PosedSwipe: React.FC<SwipeProps> = props => {
-    const [bind, { delta, down, ...rest }] = useGesture();
+    const [ delta, setDelta ] = useState(null);
+    const [ swipe, setSwipe ] = useState<any>([0, 0]);
+    const [ down, setDown] = useState<boolean>(false);
+    const [ { x, size} ,set] = useSpring(() => {
 
-    const { x, bg, size } = useSpring<any>({
-        x: down ? delta[0] : 0,
-        bg: `linear-gradient(120deg, ${
-            delta[0] < 0 ? '#f093fb 0%, #f5576c' : '#96fbc4 0%, #f9f586'
-        } 100%)`,
-        size: down ? 1.1 : 1,
-        immediate: (name: string) => down && name === 'x',
+        return {
+            x: 0,
+            y: 0,
+            size: down ? 1.1 : 1,
+        }
     });
 
-    useEffect(
-        () => {
-            if (!down && delta[0] < -200) {
-                props && props.onSwipeLeft();
+    // Set the drag hook and define component movement based on gesture data
+    const bind = useDrag(({ down, movement: [mx, my], swipe, last, event, ...rest }) => {
+        const { offsetWidth = 0 } = event ? event.target as HTMLDivElement : {} as HTMLDivElement;
+        if ( offsetWidth && mx < (offsetWidth / -2 ) &&last) {
+            props && props.onSwipeLeft();
+        }
+
+        setDown(down);
+        setSwipe(swipe);
+        set({ x: down ? mx : 0, y: down ? my : 0,  size: down ? 1.1 : 1,})
+    });
+
+    useEffect(() => {
+
+        // disable swipe for while
+        return ;
+        if (swipe && Array.isArray(swipe) && swipe.length) {
+            const [ horizontal] = swipe;
+            
+            if (horizontal < 0) {
+                // to left
+                set({
+                    x: -100
+                })
             }
-        },
-        [down, delta],
-    );
+            
+            if (horizontal > 0) {
+                // to right
 
-    const avSize = x.interpolate({
-        map: Math.abs,
-        range: [50, 300],
-        output: ['scale(0.5)', 'scale(1)'],
-        extrapolate: 'clamp',
-    });
+                set({
+                    x: 100
+                })
+            }
+
+            if (horizontal === 0) {
+                // center
+
+                set({
+                    x: 0
+                })
+            }
+
+        }
+    }, [swipe]);
 
     return (
         <animated.div
             {...bind()}
             className="item"
-            style={{ background: bg }}
+            // style={{ background: bg }}
             onClick={props.onClick}
         >
-            <animated.div
-                className="av"
-                style={{
-                    transform: avSize,
-                    justifySelf: delta[0] < 0 ? 'end' : 'start',
-                }}
-            />
+            <animated.div className="av"/>
             <animated.div
                 className="fg"
+                {...bind()}
                 style={{
                     opacity: 1,
                     transform: interpolate(

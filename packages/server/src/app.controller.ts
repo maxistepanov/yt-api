@@ -7,10 +7,11 @@ import {
     NotFoundException,
     Post,
     Query,
+    Res,
     UseInterceptors,
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import { filterFormats, getInfo, videoInfo } from 'ytdl-core';
+import { getInfo, videoInfo } from 'ytdl-core';
 import { VideoEntity } from '../entities/video.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -34,7 +35,7 @@ export class AppController {
     @Get('get-info')
     async get(@Query('url') url: string): Promise<any> {
         try {
-            const info: videoInfo = await getInfo(url);
+            const [info] = await Promise.all([getInfo(url)]);
 
             return new VideoEntity(info);
         } catch (e) {
@@ -43,7 +44,7 @@ export class AppController {
     }
 
     @Post('add-video')
-    async add(@Body() payload: videoInfo) {
+    async add(@Body() payload: videoInfo, @Res() res) {
         const video = new Video({
             name: payload.title,
             title: payload.title,

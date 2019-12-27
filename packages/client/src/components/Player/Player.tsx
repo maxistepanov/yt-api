@@ -145,8 +145,11 @@ const Player: React.FC<VideoProps> = ({ data }: VideoProps) => {
     };
 
     const onRemove = (video: VideoState) => {
-        dispatch(playlistActions.remove(video));
-        post('/remove-video', { id: video.id }).then();
+        if (video && video.id) {
+            dispatch(playlistActions.remove(video));
+            post('/remove-video', { id: video.id }).then();
+        }
+
     };
 
     const pageToggle = (path: string) => {
